@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import somCancelar from "/sounds/efeitos/cancelar1.mp3";
 import somFinalizar from "/sounds/efeitos/printer16.mp3";
