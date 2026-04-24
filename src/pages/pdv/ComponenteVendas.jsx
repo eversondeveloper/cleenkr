@@ -9,7 +9,7 @@ import ProdutosSelecionados from "./components/ProdutosSelecionados";
 import MetodosPagamento from "./components/MetodosPagamento";
 import ResumoVenda from "./components/ResumoVenda";
 import { ComponenteVendasStyled } from "./ComponenteVendasStyled";
-import { useRef, useCallback } from "react"; 
+import { useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 import somMetodosPagamento from "/sounds/efeitos/metodos_pagamento.mp3";
@@ -27,17 +27,17 @@ export default function ComponenteVendas({ sessaoAtual, temAtendentes, empresaGl
 
   const tocarSomMetodo = useCallback(() => {
     audioMetodos.current.currentTime = 0;
-    audioMetodos.current.play().catch(() => {});
+    audioMetodos.current.play().catch(() => { });
   }, []);
 
   const tocarSomProduto = useCallback(() => {
     audioClickProduto.current.currentTime = 0;
-    audioClickProduto.current.play().catch(() => {});
+    audioClickProduto.current.play().catch(() => { });
   }, []);
 
   const tocarSomProdutoMenos = useCallback(() => {
     audioClickProdutoMenos.current.currentTime = 0;
-    audioClickProdutoMenos.current.play().catch(() => {});
+    audioClickProdutoMenos.current.play().catch(() => { });
   }, []);
 
   const {
@@ -69,7 +69,7 @@ export default function ComponenteVendas({ sessaoAtual, temAtendentes, empresaGl
     handleQuantidadeChange,
     finalizarVenda,
     cancelarVenda,
-  } = useVendas(sessaoAtual); 
+  } = useVendas(sessaoAtual);
 
   const {
     filtroCategoriasSelecionadas,
@@ -136,9 +136,9 @@ export default function ComponenteVendas({ sessaoAtual, temAtendentes, empresaGl
             <span className="icone-bloqueio">🏢</span>
             <h2>Sistema não Configurado</h2>
             <p>Os dados da empresa emissora foram removidos ou não existem.</p>
-            <button 
-              className="btn-ir-atendentes" 
-              onClick={() => navigate("/everscash/atendentes_sessao")}
+            <button
+              className="btn-ir-atendentes"
+              onClick={() => navigate("/scleenkr/atendentes_sessao")}
               style={{ background: '#2196F3' }}
             >
               Configurar Empresa
@@ -157,13 +157,13 @@ export default function ComponenteVendas({ sessaoAtual, temAtendentes, empresaGl
             <span className="icone-bloqueio">{!temAtendentes ? "👤" : "🔒"}</span>
             <h2>Caixa Indisponível</h2>
             <p>
-              {!temAtendentes 
-                ? "Nenhum atendente cadastrado no sistema." 
+              {!temAtendentes
+                ? "Nenhum atendente cadastrado no sistema."
                 : "É necessário abrir uma sessão de caixa para realizar vendas."}
             </p>
-            <button 
-              className="btn-ir-atendentes" 
-              onClick={() => navigate("/everscash/atendentes_sessao")}
+            <button
+              className="btn-ir-atendentes"
+              onClick={() => navigate("/scleenkr/atendentes_sessao")}
             >
               {!temAtendentes ? "Cadastrar Atendente" : "Ir para Gestão de Caixa"}
             </button>
@@ -216,7 +216,7 @@ export default function ComponenteVendas({ sessaoAtual, temAtendentes, empresaGl
               removerProduto={removerProduto}
               handleQuantidadeChange={handleQuantidadeChange}
               totalGeral={totalGeral}
-              dadosEmpresa={empresaGlobal} 
+              dadosEmpresa={empresaGlobal}
               somClick={tocarSomProduto}
               somClickMenos={tocarSomProdutoMenos}
             />
@@ -260,7 +260,7 @@ export default function ComponenteVendas({ sessaoAtual, temAtendentes, empresaGl
           </>
         ) : (
           <div className="espera-venda">
-            <div className="logo-espera">{empresaGlobal?.nome_fantasia?.toUpperCase() || "EVERSCASH"}</div>
+            <div className="logo-espera">{empresaGlobal?.nome_fantasia?.toUpperCase() || "SCLEENKR"}</div>
             <div className="letreiro-container">
               <h2 className="letreiro-status">CAIXA LIVRE</h2>
             </div>

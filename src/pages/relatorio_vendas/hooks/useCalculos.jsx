@@ -7,7 +7,7 @@ export const useCalculos = (vendasFiltradas, retiradasFiltradas) => {
 
     // 1. PROCESSAMENTO DAS VENDAS
     (vendasFiltradas || []).forEach((v) => {
-      // Soma o troco total das vendas
+      // Soma o troco apenas para registro visual
       trocoTotalDasVendas += parseFloat(v.valor_troco || 0);
 
       // Soma os métodos de pagamento
@@ -21,8 +21,8 @@ export const useCalculos = (vendasFiltradas, retiradasFiltradas) => {
       }
     });
 
-    // 2. Ajuste do Dinheiro em Gaveta (Apenas Vendas em Dinheiro - Trocos)
-    // O fundo de caixa foi removido deste cálculo.
+    // 2. Ajuste do Dinheiro em Gaveta
+    // O dinheiro real que fica é: (Total pago em espécie) - (Troco devolvido)
     if (tot['Dinheiro'] !== undefined) {
       tot['Dinheiro'] = tot['Dinheiro'] - trocoTotalDasVendas;
     }
@@ -41,10 +41,11 @@ export const useCalculos = (vendasFiltradas, retiradasFiltradas) => {
     return (retiradasFiltradas || []).reduce((acc, r) => acc + parseFloat(r.valor || 0), 0);
   }, [retiradasFiltradas]);
 
-  // Saldo Líquido: (Vendas Brutas - Trocos Devolvidos - Retiradas / Sangrias)
+  // CORREÇÃO AQUI: Saldo Líquido deve ser (Vendas Brutas - Retiradas)
+  // O Troco NÃO entra aqui porque o 'totalVendasBruto' já é o valor líquido da venda.
   const totalLiquido = useMemo(() => {
-    return (totalVendasBruto - totaisCalculados.troco - totalRetiradas);
-  }, [totalVendasBruto, totalRetiradas, totaisCalculados.troco]);
+    return (totalVendasBruto - totalRetiradas);
+  }, [totalVendasBruto, totalRetiradas]);
 
   return {
     totaisPorMetodo: totaisCalculados.metodos,
@@ -53,7 +54,7 @@ export const useCalculos = (vendasFiltradas, retiradasFiltradas) => {
     totalTroco: totaisCalculados.troco,
     totalRetiradas,
     totalLiquido,
-    fundoCaixa: 0, // Definido como 0 pois não deve mais impactar os cálculos
+    fundoCaixa: 0,
     quantidadeVendas: (vendasFiltradas || []).length,
   };
 };

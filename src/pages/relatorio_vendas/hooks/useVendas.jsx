@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 const URL_API_VENDAS = "http://localhost:3000/vendas";
-const URL_API_LIMPAR_PERIODO = "http://localhost:3000/vendas/deletar-periodo"; // Ajustado para bater com seu servidor.js
+const URL_API_LIMPAR_PERIODO = "http://localhost:3000/vendas/deletar-periodo";
 const URL_API_LIMPAR_TOTAL = "http://localhost:3000/limpar-dados/total";
 
 export const useVendas = () => {
@@ -9,15 +9,10 @@ export const useVendas = () => {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
 
-  /**
-   * Busca as vendas. 
-   * Adicionei suporte a filtros de data que a sua API pode processar.
-   */
   const buscarVendas = useCallback(async (inicio = null, fim = null) => {
     setCarregando(true);
     setErro(null);
     try {
-      // Construção da URL com Query Params para datas
       let url = URL_API_VENDAS;
       const params = new URLSearchParams();
       if (inicio) params.append("inicio", inicio);
@@ -31,8 +26,6 @@ export const useVendas = () => {
       if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
 
       const dados = await resposta.json();
-      
-      // O segredo está aqui: o backend retorna v.itens via subconsulta JSON
       setVendas(Array.isArray(dados) ? dados : []);
     } catch (error) {
       console.error("Erro ao carregar vendas:", error);
@@ -42,12 +35,33 @@ export const useVendas = () => {
     }
   }, []);
 
+  // Lógica de Totais corrigida: O troco é apenas informativo e NÃO deduz o saldo.
+  // O que deduz o saldo são as retiradas (sangrias).
+  const totais = useMemo(() => {
+    return vendas.reduce((acc, venda) => {
+      const bruto = parseFloat(venda.valor_total_bruto || 0);
+      const sangria = parseFloat(venda.valor_sangria || 0);
+      const troco = parseFloat(venda.valor_troco || 0);
+
+      acc.faturamentoBruto += bruto;
+      acc.totalSangrias += sangria;
+      acc.totalTrocosRegistrados += troco;
+      // Saldo Líquido: Apenas Vendas menos as Retiradas (Sangrias).
+      acc.saldoLiquido += (bruto - sangria);
+
+      return acc;
+    }, {
+      faturamentoBruto: 0,
+      totalSangrias: 0,
+      totalTrocosRegistrados: 0,
+      saldoLiquido: 0
+    });
+  }, [vendas]);
+
   const deletarVenda = useCallback(async (id) => {
     try {
       const resp = await fetch(`${URL_API_VENDAS}/${id}`, { method: "DELETE" });
       if (resp.ok) {
-        // Importante: Não passamos parâmetros aqui para recarregar a lista geral
-        // ou você pode manter os filtros atuais se preferir.
         await buscarVendas();
         return true;
       }
@@ -60,11 +74,10 @@ export const useVendas = () => {
 
   const deletarTudoPorPeriodo = useCallback(async (inicio, fim) => {
     try {
-      // Ajustei a rota para /vendas/deletar-periodo conforme seu servidor.js
       const resp = await fetch(URL_API_LIMPAR_PERIODO, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idsVendas: [] }), // Sua API espera idsVendas no corpo
+        body: JSON.stringify({ idsVendas: [] }), 
       });
       
       if (resp.ok) {
@@ -152,13 +165,13 @@ export const useVendas = () => {
     }
   }, [buscarVendas]);
 
-  // Carregamento inicial
   useEffect(() => {
     buscarVendas();
   }, [buscarVendas]);
 
   return {
     vendas,
+    totais, // Agora você tem totais.saldoLiquido e totais.faturamentoBruto prontos
     carregando,
     erro,
     buscarVendas,
