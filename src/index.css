@@ -1,23 +1,40 @@
-*{
+@import "tailwindcss";
+
+@theme {
+  /* Paleta da marca Scleenkr */
+  --color-scleenkr-bg: #1e1e1e;
+  --color-scleenkr-card: #2d2d2d;
+  --color-scleenkr-text: #E0E0E0;
+  --color-scleenkr-muted: #A0A0A0;
+  --color-scleenkr-primary: #FF9800;
+  --color-scleenkr-primaryHover: #e68900;
+  --color-scleenkr-success: #64ff8a;
+  --color-scleenkr-successHover: #4caf50;
+  --color-scleenkr-danger: #E53935;
+  --color-scleenkr-dangerHover: #c62828;
+  --color-scleenkr-border: #333333;
+  --color-scleenkr-borderLight: #444444;
+}
+
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #BACBD9;
   user-select: none;
 }
 
-title{
-  color: #FF9509;
-}
-
 body {
-  background-color: #1e1e1e;
-  color: #333;
+  background-color: var(--color-scleenkr-bg);
+  color: var(--color-scleenkr-text);
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+
+.title {
+  color: var(--color-scleenkr-primary);
 }
 
 /* :root {
