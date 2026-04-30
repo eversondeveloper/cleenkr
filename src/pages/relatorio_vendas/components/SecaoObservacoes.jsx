@@ -15,81 +15,43 @@ export const SecaoObservacoes = ({
   const dataFormatada = new Date(dataSelecionada + 'T00:00:00').toLocaleDateString('pt-BR');
 
   return (
-    <div style={{ 
-      marginTop: '40px', 
-      padding: '25px', 
-      backgroundColor: '#1a1a1a', 
-      borderRadius: '8px',
-      border: '1px solid #333',
-      boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h3 style={{ color: '#BACBD9', margin: 0, fontSize: '18px' }}>
-          Observações do Dia: <span style={{ color: '#64ff8a' }}>{dataFormatada}</span>
+    <div className="mt-10 p-6 bg-card rounded-lg border border-border shadow-md w-full box-border">
+      
+      {/* Cabeçalho */}
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-muted-foreground m-0 text-lg font-medium">
+          Observações do Dia: <span className="text-success font-bold ml-1">{dataFormatada}</span>
         </h3>
-        {carregando && <span style={{ color: '#888', fontSize: '12px' }}>Processando...</span>}
+        {carregando && <span className="text-muted-foreground text-xs animate-pulse">Processando...</span>}
       </div>
       
+      {/* Área de Texto */}
       <textarea
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
         placeholder="Registre aqui ocorrências, notas sobre o fechamento ou lembretes importantes deste dia específico..."
-        style={{
-          width: '100%',
-          minHeight: '150px',
-          backgroundColor: '#0c0c0c',
-          color: '#e0e0e0',
-          border: '1px solid #444',
-          borderRadius: '6px',
-          padding: '15px',
-          fontSize: '15px',
-          fontFamily: 'inherit',
-          lineHeight: '1.5',
-          resize: 'vertical',
-          outline: 'none',
-          transition: 'border-color 0.2s'
-        }}
-        onFocus={(e) => e.target.style.borderColor = '#2196F3'}
-        onBlur={(e) => e.target.style.borderColor = '#444'}
         disabled={carregando}
+        className="w-full min-h-[150px] bg-background text-foreground border border-border rounded-md p-4 text-[15px] leading-relaxed resize-y outline-none transition-colors focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50"
       />
 
-      <div style={{ display: 'flex', gap: '12px', marginTop: '15px', justifyContent: 'flex-end' }}>
+      {/* Botões de Ação */}
+      <div className="flex gap-3 mt-4 justify-end">
         <button
           onClick={onApagar}
           disabled={carregando || !texto}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: 'transparent',
-            color: '#ff5252',
-            border: '1px solid #ff5252',
-            borderRadius: '4px',
-            cursor: (carregando || !texto) ? 'not-allowed' : 'pointer',
-            opacity: (carregando || !texto) ? 0.5 : 1,
-            fontWeight: '500',
-            transition: 'all 0.2s'
-          }}
+          className="px-5 py-2.5 bg-transparent text-destructive border border-destructive rounded font-medium transition-colors hover:bg-destructive/10 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Excluir Registro
         </button>
         <button
           onClick={onSalvar}
           disabled={carregando}
-          style={{
-            padding: '10px 30px',
-            backgroundColor: '#2196F3',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: carregando ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-            transition: 'background-color 0.2s'
-          }}
+          className="px-7 py-2.5 bg-blue-500 text-white border-none rounded font-bold shadow-sm transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
         >
           {carregando ? 'Salvando...' : 'Salvar Observação'}
         </button>
       </div>
+      
     </div>
   );
 };
