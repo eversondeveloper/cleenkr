@@ -1,6 +1,4 @@
-// components/TabelaRetiradasComponent.jsx
 import React from 'react';
-import { TabelaVendas } from "../RelatoriosStyled";
 
 export const TabelaRetiradasComponent = ({
   retiradasFiltradas,
@@ -28,81 +26,78 @@ export const TabelaRetiradasComponent = ({
   };
 
   return (
-    <div style={{ marginTop: "40px", width: "100%" }}>
-      <h2>
+    <div className="mt-10 w-full">
+      <h2 className="m-0 text-foreground text-xl font-semibold mb-4">
         Retiradas do Caixa{" "}
         {(filtroDataInicio || filtroDataFim) && (
-          <span style={{ fontSize: '14px', color: '#888' }}>
+          <span className="text-sm text-muted-foreground font-normal ml-2">
             (Filtradas pelo mesmo período das vendas: {filtroDataInicio || 'Início'} 
             {filtroDataFim ? ` à ${filtroDataFim}` : ''})
           </span>
         )}
       </h2>
+      
       {retiradasFiltradas.length === 0 ? (
-        <p style={{ textAlign: "center", padding: "20px", color: "#888" }}>
+        <p className="text-center p-5 text-muted-foreground bg-card rounded-lg border border-border">
           {filtroDataInicio || filtroDataFim
             ? "Nenhuma retirada registrada no período filtrado."
             : "Nenhuma retirada registrada."}
         </p>
       ) : (
-        <TabelaVendas>
-          <thead>
-            <tr>
-              <th>Data/Hora</th>
-              <th>Valor</th>
-              <th>Motivo</th>
-              <th>Observação</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {retiradasFiltradas.map((retirada) => (
-              <tr key={retirada.id_retirada}>
-                <td>
-                  {/* CORREÇÃO: Usa o campo data_retirada (que agora tem o timestamp completo) */}
-                  {formatarDataHora(retirada.data_retirada)}
-                </td>
-                <td className="valor-retirada">
-                  R$ {parseFloat(retirada.valor).toFixed(2).replace(".", ",")}
-                </td>
-                <td>{retirada.motivo}</td>
-                <td>{retirada.observacao || "-"}</td>
-                <td>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => onEditarRetirada(retirada)}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#2196F3',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => onDeletarRetirada(retirada.id_retirada)}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#ff5252',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Deletar
-                    </button>
-                  </div>
-                </td>
+        <div className="w-full overflow-x-auto bg-card rounded-xl border border-border shadow-sm">
+          <table className="w-full text-sm text-left text-foreground border-collapse">
+            <thead className="text-xs text-muted-foreground uppercase bg-secondary/50 border-b border-border">
+              <tr>
+                <th className="px-4 py-3 font-medium w-[180px]">Data/Hora</th>
+                <th className="px-4 py-3 font-medium w-[150px]">Valor</th>
+                <th className="px-4 py-3 font-medium">Motivo</th>
+                <th className="px-4 py-3 font-medium">Observação</th>
+                <th className="px-4 py-3 font-medium text-center w-[180px]">Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </TabelaVendas>
+            </thead>
+            <tbody>
+              {retiradasFiltradas.map((retirada, index) => (
+                <tr 
+                  key={retirada.id_retirada}
+                  className={`border-b border-border transition-colors hover:bg-muted/50 ${index % 2 === 0 ? 'bg-background' : 'bg-card'}`}
+                >
+                  <td className="px-4 py-4 align-middle whitespace-nowrap text-muted-foreground">
+                    {formatarDataHora(retirada.data_retirada)}
+                  </td>
+                  
+                  <td className="px-4 py-4 align-middle font-bold text-warning">
+                    R$ {parseFloat(retirada.valor).toFixed(2).replace(".", ",")}
+                  </td>
+                  
+                  <td className="px-4 py-4 align-middle font-medium text-foreground">
+                    {retirada.motivo}
+                  </td>
+                  
+                  <td className="px-4 py-4 align-middle text-muted-foreground italic">
+                    {retirada.observacao || "-"}
+                  </td>
+                  
+                  <td className="px-4 py-4 align-middle">
+                    <div className="flex gap-2 justify-center">
+                      <button
+                        onClick={() => onEditarRetirada(retirada)}
+                        className="bg-blue-500 text-white hover:bg-blue-600 px-3 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => onDeletarRetirada(retirada.id_retirada)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90 px-3 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
+                      >
+                        Deletar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
