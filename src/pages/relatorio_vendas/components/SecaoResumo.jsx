@@ -30,87 +30,90 @@ export const SecaoResumo = ({
   const seguro = (valor) => parseFloat(valor || 0);
 
   return (
-    <div className="secao-resumo">
+    <div className="bg-card p-5 mb-[30px] rounded-lg w-full text-foreground shadow-md border border-border box-border">
+      
+      {/* CABEÇALHO DA EMPRESA */}
       {dadosEmpresa && (
-        <div className="cabecalho-empresa" style={{ marginBottom: '20px' }}>
-          <h2 style={{ marginBottom: '5px', fontSize: '18px', color: '#4180B9' }}>
+        <div className="pb-4 mb-[25px] border-b border-border w-full">
+          <h2 className="mb-1 text-[18px] font-medium text-[#4180B9]">
             {dadosEmpresa.nome_fantasia || dadosEmpresa.razao_social || "EMPRESA NÃO CADASTRADA"}
           </h2>
-          <p style={{ fontSize: '12px', margin: '2px 0', color: '#888' }}>
+          <p className="text-[12px] my-0.5 text-muted-foreground">
             {dadosEmpresa.cnpj && `CNPJ: ${dadosEmpresa.cnpj} `}
             {dadosEmpresa.telefone && `| Tel: ${dadosEmpresa.telefone}`}
           </p>
-          <p style={{ fontWeight: 'bold', fontSize: '14px', margin: '15px 0 5px 0', borderTop: '1px solid #333', paddingTop: '10px' }}>
+          <p className="font-bold text-[14px] mt-4 pt-2.5 border-t border-border tracking-normal">
             RELATÓRIO FINANCEIRO DETALHADO
           </p>
-          <p style={{ fontSize: '12px', color: '#666' }}>
+          <p className="text-[12px] text-muted-foreground mt-1">
             Período: {periodoTexto}
           </p>
         </div>
       )}
-      
-      <div className="resumo-superior">
-        <div className="info-filtros">
-          <div className="filtros-ativos">
-            <strong>Filtros de Pagamento:</strong>
-            {filtroMetodosPagamento.length > 0
-              ? ` ${filtroMetodosPagamento.join(", ")}`
-              : " Todos os métodos"}
-          </div>
-          <div style={{ marginTop: '5px' }}>
-            Total de Vendas no Período: <span className="destaque">{quantidadeVendas}</span> registro(s)
-          </div>
+
+      {/* INFO DE FILTROS APLICADOS */}
+      <div className="flex flex-col mb-4 pb-4 border-b border-dashed border-border gap-2.5">
+        <div className="text-[13px] text-muted-foreground">
+          <strong className="text-foreground font-bold mr-1">Filtros de Pagamento:</strong>
+          {filtroMetodosPagamento.length > 0
+            ? filtroMetodosPagamento.join(", ")
+            : "Todos os métodos"}
+        </div>
+        <div className="text-[14px] text-foreground font-medium">
+          Total de Vendas no Período: <span className="text-success font-bold mx-0.5">{quantidadeVendas}</span> registro(s)
         </div>
       </div>
 
-      <div className="resumo-financeiro" style={{ backgroundColor: '#1a1a1a', padding: '20px', borderRadius: '8px', border: '1px solid #333' }}>
-        <div className="titulo-resumo" style={{ color: '#E0E0E0', marginBottom: '15px', fontWeight: 'bold' }}>
+      {/* FLUXO DE CAIXA (GRID FINANCEIRO) */}
+      <div className="bg-background p-5 rounded-lg border border-border">
+        <div className="text-foreground mb-4 font-bold text-[14px]">
           Fluxo de Caixa do Período:
         </div>
-        <div className="valores-resumo" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-          
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '12px', color: '#888' }}>Vendas Brutas (+):</span>
-            <span className="destaque" style={{ color: '#64ff8a', fontSize: '16px' }}>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2">
+          <div className="flex flex-col">
+            <span className="text-[12px] text-muted-foreground mb-1">Vendas Brutas (+):</span>
+            <span className="text-success font-bold text-[16px]">
               R$ {seguro(totalVendasBruto).toFixed(2).replace(".", ",")}
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '12px', color: '#888' }}>Trocos Devolvidos (-):</span>
-            <span className="destaque-negativo" style={{ color: '#ff5252', fontSize: '16px' }}>
+          <div className="flex flex-col">
+            <span className="text-[12px] text-muted-foreground mb-1">Trocos Devolvidos (-):</span>
+            <span className="text-warning font-bold text-[16px]">
               R$ {seguro(totalTroco).toFixed(2).replace(".", ",")}
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '12px', color: '#888' }}>Sangrias/Retiradas (-):</span>
-            <span className="destaque-negativo" style={{ color: '#ff5252', fontSize: '16px' }}>
+          <div className="flex flex-col">
+            <span className="text-[12px] text-muted-foreground mb-1">Sangrias/Retiradas (-):</span>
+            <span className="text-warning font-bold text-[16px]">
               R$ {seguro(totalRetiradas).toFixed(2).replace(".", ",")}
             </span>
           </div>
         </div>
 
-        <div style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #444', display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '14px', color: '#E0E0E0', display: 'block' }}>Saldo Líquido Estimado em Caixa:</span>
-            <span className={`destaque-liquido ${seguro(totalLiquido) >= 0 ? 'positivo' : 'negativo'}`} style={{ fontSize: '24px', fontWeight: 'bold' }}>
+        <div className="pt-4 mt-5 border-t border-border flex justify-end">
+          <div className="text-right">
+            <span className="text-[14px] text-foreground block mb-1 font-medium">Saldo Líquido Estimado em Caixa:</span>
+            <span className={`font-bold text-[24px] ${seguro(totalLiquido) >= 0 ? 'text-success' : 'text-destructive'}`}>
               R$ {seguro(totalLiquido).toFixed(2).replace(".", ",")}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="totais-metodos" style={{ marginTop: '25px' }}>
-        <div className="titulo-metodos" style={{ fontSize: '14px', marginBottom: '10px', color: '#aaa' }}>
+      {/* TOTALIZAÇÃO POR MÉTODOS DE PAGAMENTO */}
+      <div className="pt-4 mt-[25px] border-t border-border">
+        <div className="text-[14px] mb-3 text-muted-foreground font-medium">
           Totalização por Meio de Recebimento:
         </div>
-        <div className="lista-metodos" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+        <div className="flex flex-wrap gap-5">
           {Object.entries(totaisPorMetodo || {}).map(([metodo, total]) => {
             return (
-              <div key={metodo} style={{ background: '#222', padding: '10px 15px', borderRadius: '5px', border: '1px solid #333' }}>
-                <span style={{ fontSize: '12px', color: '#888', display: 'block' }}>{metodo}</span>
-                <span className="destaque" style={{ fontWeight: 'bold' }}>
+              <div key={metodo} className="bg-secondary px-4 py-2.5 rounded border border-border flex flex-col min-w-[120px]">
+                <span className="text-[12px] text-muted-foreground mb-1 block">{metodo}</span>
+                <span className="text-success font-bold text-[15px]">
                   R$ {seguro(total).toFixed(2).replace(".", ",")}
                 </span>
               </div>
@@ -118,6 +121,7 @@ export const SecaoResumo = ({
           })}
         </div>
       </div>
+
     </div>
   );
 };
