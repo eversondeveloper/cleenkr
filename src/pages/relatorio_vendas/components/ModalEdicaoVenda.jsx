@@ -1,4 +1,3 @@
-// components/ModalEdicaoVenda.jsx
 import React, { useState, useEffect, useRef } from "react";
 
 const METODOS_PAGAMENTO = ["Dinheiro", "Pix", "Crédito", "Débito"];
@@ -11,7 +10,7 @@ export const ModalEdicaoVenda = ({
 }) => {
   const [pagamentos, setPagamentos] = useState([]);
   const [valorTemp, setValorTemp] = useState("");
-  const inputValorRef = useRef(null); // Referência para focar o input automaticamente
+  const inputValorRef = useRef(null);
 
   const [novoPagamento, setNovoPagamento] = useState({
     metodo: "Dinheiro",
@@ -19,7 +18,6 @@ export const ModalEdicaoVenda = ({
     referencia_metodo: "",
   });
 
-  // Sincroniza dados ao abrir
   useEffect(() => {
     if (mostrar && vendaEditando) {
       const inicial = (vendaEditando.pagamentos || []).map((p) => ({
@@ -28,13 +26,10 @@ export const ModalEdicaoVenda = ({
         referencia_metodo: p.referencia_metodo || p.referenciaMetodo || "",
       }));
       setPagamentos(inicial);
-
-      // Sugere o valor restante automaticamente ao abrir
       sugerirValorRestante(inicial);
     }
   }, [mostrar, vendaEditando]);
 
-  // Função para sugerir o que falta pagar
   const sugerirValorRestante = (listaPagamentos) => {
     const totalBruto = parseFloat(vendaEditando?.valor_total_bruto || 0);
     const totalPago = listaPagamentos.reduce((acc, p) => acc + p.valor_pago, 0);
@@ -50,7 +45,7 @@ export const ModalEdicaoVenda = ({
   const adicionarPagamento = () => {
     const valorNum = parseFloat(novoPagamento.valor_pago);
     if (!novoPagamento.metodo || isNaN(valorNum) || valorNum <= 0) {
-      return; // Evita adicionar valores vazios ou zero
+      return; 
     }
 
     const novaLista = [
@@ -64,7 +59,6 @@ export const ModalEdicaoVenda = ({
 
     setPagamentos(novaLista);
 
-    // Reseta e sugere o próximo valor (se houver)
     const totalBruto = parseFloat(vendaEditando.valor_total_bruto || 0);
     const totalPago = novaLista.reduce((acc, p) => acc + p.valor_pago, 0);
     const falta = Math.max(0, totalBruto - totalPago);
@@ -76,7 +70,6 @@ export const ModalEdicaoVenda = ({
     });
     setValorTemp("");
 
-    // Devolve o foco para o input de valor para próxima digitação
     setTimeout(() => inputValorRef.current?.focus(), 10);
   };
 
@@ -125,222 +118,133 @@ export const ModalEdicaoVenda = ({
     onAtualizar(vendaEditando.id_venda, dadosParaBanco);
   };
 
-  const inputStyle = {
-    padding: "12px",
-    backgroundColor: "#1e1e1e",
-    color: "#64ff8a", // Cor de destaque no valor
-    border: "1px solid #444",
-    borderRadius: "6px",
-    fontSize: "16px",
-    fontWeight: "bold",
-    flex: 1,
-  };
+  const isPagamentoSuficiente = calcularTotalPago() >= parseFloat(vendaEditando.valor_total_bruto) - 0.01;
 
   return (
-    <div className="modal-overlay">
-      <div
-        className="modal-content"
-        style={{ maxWidth: "500px", borderRadius: "12px" }}
-      >
-        <header
-          style={{
-            borderBottom: "1px solid #333",
-            marginBottom: "20px",
-            paddingBottom: "10px",
-          }}
-        >
-          <h3 style={{ margin: 0 }}>Venda #{vendaEditando.id_venda}</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-5 animate-in fade-in duration-200">
+      <div className="bg-[#2d2d2d] w-full max-w-[500px] rounded-xl border border-[#444] shadow-2xl flex flex-col max-h-[90vh]">
+        
+        <header className="p-5 pb-4 border-b border-[#333] shrink-0">
+          <h3 className="m-0 text-[#E0E0E0] text-[18px] font-medium">Edição de Pagamentos - Venda #{vendaEditando.id_venda}</h3>
         </header>
 
-        <div
-          style={{
-            marginBottom: "20px",
-            padding: "15px",
-            backgroundColor: "#1a1a1a",
-            borderRadius: "8px",
-            border: "1px solid #333",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontSize: "14px",
-              color: "#888",
-            }}
-          >
-            <span>Total da Venda:</span>
-            <span>Total Pago:</span>
+        <div className="p-5 overflow-y-auto flex-1">
+          {/* BOX DE TOTAIS */}
+          <div className="mb-5 p-4 bg-[#1a1a1a] rounded-lg border border-[#333]">
+            <div className="flex justify-between text-[13px] text-muted-foreground font-medium mb-1.5">
+              <span>Total da Venda:</span>
+              <span>Total Pago:</span>
+            </div>
+            <div className="flex justify-between items-end">
+              <span className="text-[20px] font-bold text-[#E0E0E0]">
+                R$ {parseFloat(vendaEditando.valor_total_bruto).toFixed(2).replace(".", ",")}
+              </span>
+              <span className={`text-[20px] font-bold ${calcularTotalPago() >= parseFloat(vendaEditando.valor_total_bruto) ? "text-[#64ff8a]" : "text-[#ff5252]"}`}>
+                R$ {calcularTotalPago().toFixed(2).replace(".", ",")}
+              </span>
+            </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontSize: "20px",
-              fontWeight: "bold",
-              marginTop: "5px",
-            }}
-          >
-            <span style={{ color: "#E0E0E0" }}>
-              R${" "}
-              {parseFloat(vendaEditando.valor_total_bruto)
-                .toFixed(2)
-                .replace(".", ",")}
-            </span>
-            <span
-              style={{
-                color:
-                  calcularTotalPago() >=
-                  parseFloat(vendaEditando.valor_total_bruto)
-                    ? "#64ff8a"
-                    : "#ff5252",
-              }}
-            >
-              R$ {calcularTotalPago().toFixed(2).replace(".", ",")}
-            </span>
-          </div>
-        </div>
 
-        <div style={{ marginBottom: "25px" }}>
-          <label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontSize: "12px",
-              color: "#aaa",
-            }}
-          >
-            MÉTODO E VALOR (ENTER PARA ADICIONAR)
-          </label>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <select
-              value={novoPagamento.metodo}
-              onChange={(e) =>
-                setNovoPagamento({ ...novoPagamento, metodo: e.target.value })
-              }
-              style={{ ...inputStyle, flex: "0.6", color: "#BACBD9" }}
-            >
-              {METODOS_PAGAMENTO.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-            <input
-              ref={inputValorRef}
-              type="text"
-              autoFocus
-              value={valorTemp !== "" ? valorTemp : novoPagamento.valor_pago}
-              onFocus={() => setValorTemp("")}
-              onBlur={() => setValorTemp("")}
-              onKeyDown={handleKeyDown}
-              onChange={(e) => {
-                const val = e.target.value.replace(",", ".");
-                setValorTemp(e.target.value);
-                setNovoPagamento({ ...novoPagamento, valor_pago: val });
-              }}
-              placeholder="0,00"
-              style={inputStyle}
-            />
-            <button
-              onClick={adicionarPagamento}
-              className="btn-primary"
-              style={{ padding: "0 20px", borderRadius: "6px" }}
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <h4 style={{ marginBottom: "10px", fontSize: "14px", color: "#888" }}>
-            Pagamentos Lançados:
-          </h4>
-          <div
-            style={{
-              maxHeight: "180px",
-              overflowY: "auto",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            {pagamentos.map((pag, index) => (
-              <div
-                key={index}
-                onClick={() => carregarParaEditar(index)}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "10px 15px",
-                  backgroundColor: "#2a2a2a",
-                  borderRadius: "6px",
-                  borderLeft: "4px solid #64ff8a",
-                  cursor: "pointer",
-                  transition: "0.2s",
-                }}
-                className="item-pagamento-lista"
+          {/* INPUT DE NOVO PAGAMENTO */}
+          <div className="mb-6">
+            <label className="block mb-2 text-[11px] font-bold tracking-wider text-muted-foreground">
+              MÉTODO E VALOR (ENTER PARA ADICIONAR)
+            </label>
+            <div className="flex gap-2">
+              <select
+                value={novoPagamento.metodo}
+                onChange={(e) => setNovoPagamento({ ...novoPagamento, metodo: e.target.value })}
+                className="flex-[0.6] p-3 bg-[#1e1e1e] text-[#BACBD9] border border-[#444] rounded-md text-[15px] font-medium outline-none focus:border-[#2196F3] cursor-pointer"
               >
-                <span>
-                  <strong>{pag.metodo}</strong>
-                </span>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "15px" }}
-                >
-                  <span style={{ fontWeight: "bold" }}>
-                    R$ {pag.valor_pago.toFixed(2).replace(".", ",")}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setPagamentos(pagamentos.filter((_, i) => i !== index));
-                    }}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      color: "#ff5252",
-                      cursor: "pointer",
-                      fontSize: "18px",
-                    }}
-                  >
-                    &times;
-                  </button>
-                </div>
+                {METODOS_PAGAMENTO.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+              
+              <input
+                ref={inputValorRef}
+                type="text"
+                autoFocus
+                value={valorTemp !== "" ? valorTemp : novoPagamento.valor_pago}
+                onFocus={() => setValorTemp("")}
+                onBlur={() => setValorTemp("")}
+                onKeyDown={handleKeyDown}
+                onChange={(e) => {
+                  const val = e.target.value.replace(",", ".");
+                  setValorTemp(e.target.value);
+                  setNovoPagamento({ ...novoPagamento, valor_pago: val });
+                }}
+                placeholder="0,00"
+                className="flex-1 p-3 bg-[#1e1e1e] text-success border border-[#444] rounded-md text-[16px] font-bold outline-none focus:border-[#2196F3] text-right"
+              />
+              
+              <button
+                onClick={adicionarPagamento}
+                className="px-4 bg-primary text-primary-foreground rounded-md font-bold text-lg hover:bg-primary/90 transition-colors active:scale-95 border-none cursor-pointer"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* LISTA DE PAGAMENTOS LANÇADOS */}
+          <div>
+            <h4 className="mb-3 text-[13px] font-semibold text-muted-foreground m-0">
+              Pagamentos Lançados:
+            </h4>
+            
+            {pagamentos.length === 0 ? (
+              <div className="text-center p-4 border border-dashed border-[#444] rounded-lg text-muted-foreground text-[13px]">
+                Nenhum pagamento registrado.
               </div>
-            ))}
+            ) : (
+              <div className="flex flex-col gap-2">
+                {pagamentos.map((pag, index) => (
+                  <div
+                    key={index}
+                    onClick={() => carregarParaEditar(index)}
+                    className="flex justify-between items-center p-3 bg-[#2a2a2a] rounded-md border-l-4 border-success cursor-pointer transition-colors hover:bg-[#333] group"
+                  >
+                    <span className="font-semibold text-[14px] text-foreground">{pag.metodo}</span>
+                    <div className="flex items-center gap-4">
+                      <span className="font-bold text-[15px] text-foreground">
+                        R$ {parseFloat(pag.valor_pago).toFixed(2).replace(".", ",")}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPagamentos(pagamentos.filter((_, i) => i !== index));
+                        }}
+                        className="bg-transparent border-none text-[#ff5252] cursor-pointer text-[20px] font-bold opacity-70 hover:opacity-100 transition-opacity p-0 leading-none h-5 w-5 flex items-center justify-center rounded-full hover:bg-[#ff5252]/10"
+                        title="Remover"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        <div
-          className="modal-actions"
-          style={{ marginTop: "30px", display: "flex", gap: "10px" }}
-        >
+        {/* AÇÕES FINAIS */}
+        <div className="p-5 pt-4 border-t border-[#333] flex gap-3 shrink-0">
           <button
             onClick={onClose}
-            className="btn-secondary"
-            style={{ flex: 1 }}
+            className="flex-1 py-2.5 bg-[#444] text-[#E0E0E0] font-medium rounded border-none cursor-pointer hover:bg-[#555] transition-colors"
           >
             Cancelar
           </button>
           <button
             onClick={handleAtualizar}
-            className="btn-primary"
-            style={{
-              flex: 1,
-              opacity:
-                calcularTotalPago() <
-                parseFloat(vendaEditando.valor_total_bruto) - 0.01
-                  ? 0.5
-                  : 1,
-              backgroundColor: "#64ff8a",
-              color: "#000",
-              fontWeight: "bold",
-            }}
+            disabled={!isPagamentoSuficiente}
+            className="flex-1 py-2.5 bg-success text-success-foreground font-bold rounded border-none cursor-pointer hover:bg-[#52e878] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Finalizar Edição
           </button>
         </div>
+        
       </div>
     </div>
   );
