@@ -70,36 +70,31 @@ export const ModalObservacao = ({
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content" style={{ 
-        maxWidth: '800px', 
-        maxHeight: '90vh', 
-        display: 'flex', 
-        flexDirection: 'column' 
-      }}>
-        <h3 style={{ flexShrink: 0 }}>Observações do Dia: {dataFormatada}</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-5 animate-in fade-in duration-200">
+      <div className="bg-[#2d2d2d] flex flex-col p-6 rounded-lg w-full max-w-[800px] max-h-[90vh] border border-[#444] shadow-2xl">
+        <h3 className="text-[#E0E0E0] mt-0 mb-4 pb-3 border-b border-[#333] text-[20px] font-medium shrink-0">
+          Observações do Dia: <span className="text-[#64ff8a] font-bold">{dataFormatada}</span>
+        </h3>
 
-        <div className="input-group" style={{ 
-          marginBottom: '10px', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          flexGrow: 1, 
-          overflow: 'hidden'
-        }}>
-          <label style={{ flexShrink: 0 }}>Relato / Notas do Dia:</label>
+        <div className="flex flex-col flex-1 overflow-hidden mb-2.5">
+          <label className="text-[13px] text-muted-foreground mb-2 shrink-0">Relato / Notas do Dia:</label>
           
-          <div style={toolbarStyle}>
-            <div style={groupStyle}>
-              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('bold'); }} style={btnEditorStyle} title="Negrito"><b>B</b></button>
-              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('italic'); }} style={btnEditorStyle} title="Itálico"><i>I</i></button>
-              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('underline'); }} style={btnEditorStyle} title="Sublinhado"><u>U</u></button>
+          {/* BARRA DE FERRAMENTAS DO EDITOR */}
+          <div className="flex flex-wrap gap-2.5 mb-2.5 p-2 bg-[#1e1e1e] border border-[#444] rounded shrink-0">
+            
+            {/* Formatação Básica */}
+            <div className="flex items-center gap-1 border-r border-[#444] pr-2.5">
+              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('bold'); }} className="bg-[#333] text-[#eee] border border-[#555] rounded px-2 py-1 text-xs cursor-pointer hover:bg-[#444] min-w-[32px] transition-colors" title="Negrito"><b>B</b></button>
+              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('italic'); }} className="bg-[#333] text-[#eee] border border-[#555] rounded px-2 py-1 text-xs cursor-pointer hover:bg-[#444] min-w-[32px] transition-colors" title="Itálico"><i>I</i></button>
+              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('underline'); }} className="bg-[#333] text-[#eee] border border-[#555] rounded px-2 py-1 text-xs cursor-pointer hover:bg-[#444] min-w-[32px] transition-colors" title="Sublinhado"><u>U</u></button>
             </div>
 
-            <div style={groupStyle}>
+            {/* Tamanho da Fonte */}
+            <div className="flex items-center gap-1 border-r border-[#444] pr-2.5">
               <select 
                 onChange={(e) => aplicarComando('fontSize', e.target.value)}
-                style={selectStyle}
                 defaultValue="3"
+                className="bg-[#333] text-[#eee] border border-[#555] rounded px-1.5 py-1 text-xs outline-none focus:border-[#2196F3] cursor-pointer"
               >
                 <option value="1">Pequeno</option>
                 <option value="3">Normal</option>
@@ -108,117 +103,69 @@ export const ModalObservacao = ({
               </select>
             </div>
 
-            <div style={groupStyle}>
-              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('insertUnorderedList'); }} style={btnEditorStyle} title="Lista">• Lista</button>
-              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('justifyLeft'); }} style={btnEditorStyle} title="Alinhar Esquerda">Esq</button>
-              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('justifyCenter'); }} style={btnEditorStyle} title="Centralizar">Centro</button>
-              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('justifyRight'); }} style={btnEditorStyle} title="Alinhar Direita">Dir</button>
-              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('justifyFull'); }} style={btnEditorStyle} title="Justificar">Just</button>
+            {/* Alinhamento e Listas */}
+            <div className="flex items-center gap-1 border-r border-[#444] pr-2.5">
+              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('insertUnorderedList'); }} className="bg-[#333] text-[#eee] border border-[#555] rounded px-2 py-1 text-xs cursor-pointer hover:bg-[#444] transition-colors" title="Lista">• Lista</button>
+              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('justifyLeft'); }} className="bg-[#333] text-[#eee] border border-[#555] rounded px-2 py-1 text-xs cursor-pointer hover:bg-[#444] transition-colors" title="Alinhar Esquerda">Esq</button>
+              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('justifyCenter'); }} className="bg-[#333] text-[#eee] border border-[#555] rounded px-2 py-1 text-xs cursor-pointer hover:bg-[#444] transition-colors" title="Centralizar">Centro</button>
+              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('justifyRight'); }} className="bg-[#333] text-[#eee] border border-[#555] rounded px-2 py-1 text-xs cursor-pointer hover:bg-[#444] transition-colors" title="Alinhar Direita">Dir</button>
+              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('justifyFull'); }} className="bg-[#333] text-[#eee] border border-[#555] rounded px-2 py-1 text-xs cursor-pointer hover:bg-[#444] transition-colors" title="Justificar">Just</button>
             </div>
 
-            <div style={{...groupStyle, borderRight: 'none'}}>
-              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('removeFormat'); }} style={{...btnEditorStyle, color: '#ff5252'}} title="Limpar Formatação">Limpar</button>
+            {/* Limpar Formatação */}
+            <div className="flex items-center gap-1">
+              <button type="button" onMouseDown={(e) => { e.preventDefault(); aplicarComando('removeFormat'); }} className="bg-[#333] text-[#ff5252] border border-[#555] rounded px-2 py-1 text-xs cursor-pointer hover:bg-[#444] transition-colors font-medium" title="Limpar Formatação">Limpar</button>
             </div>
           </div>
 
+          {/* ÁREA EDITÁVEL */}
           <div
             ref={editorRef}
-            className="editor-rich-text"
+            className="editor-rich-text flex-1 overflow-y-auto bg-[#0c0c0c] text-[#64ff8a] border border-[#555] rounded p-4 text-[16px] leading-[1.6] outline-none transition-colors focus:border-[#2196F3]"
             contentEditable={!carregando}
             onInput={(e) => setTexto(e.currentTarget.innerHTML)}
-            onPaste={handlePaste} // Adicionado o interceptador de colar
-            style={{
-              ...editorAreaStyle,
-              flexGrow: 1,
-              maxHeight: 'none',
-            }}
+            onPaste={handlePaste}
           />
         </div>
 
+        {/* Estilos injetados para o conteúdo gerado pelo document.execCommand - CORRIGIDO AS LISTAS */}
         <style>{`
-          .editor-rich-text ul, .editor-rich-text ol { padding-left: 25px; margin: 10px 0; }
-          .editor-rich-text li { margin-bottom: 5px; }
+          .editor-rich-text ul { list-style-type: disc; padding-left: 25px; margin: 10px 0; }
+          .editor-rich-text ol { list-style-type: decimal; padding-left: 25px; margin: 10px 0; }
+          .editor-rich-text li { margin-bottom: 5px; display: list-item; }
           .editor-rich-text font[size="1"] { font-size: 12px; }
           .editor-rich-text font[size="3"] { font-size: 16px; }
           .editor-rich-text font[size="5"] { font-size: 20px; font-weight: bold; }
           .editor-rich-text font[size="7"] { font-size: 30px; font-weight: bold; }
         `}</style>
 
-        <div className="modal-actions" style={{ flexShrink: 0, marginTop: '10px' }}>
+        {/* RODAPÉ DO MODAL (AÇÕES) */}
+        <div className="flex items-center shrink-0 mt-4 pt-4 border-t border-[#333] gap-3">
           <button 
             onClick={onApagar} 
-            className="btn-secondary"
-            style={{ marginRight: 'auto', color: '#ff5252', border: '1px solid #ff5252', backgroundColor: 'transparent' }}
             disabled={carregando || !texto}
+            className="mr-auto px-4 py-2 bg-transparent text-[#ff5252] border border-[#ff5252] rounded font-medium cursor-pointer transition-colors hover:bg-[#ff5252]/10 disabled:opacity-50 disabled:cursor-not-allowed text-[14px]"
           >
             Excluir Nota
           </button>
           
-          <button onClick={onClose} className="btn-secondary" disabled={carregando}>
+          <button 
+            onClick={onClose} 
+            disabled={carregando}
+            className="px-4 py-2 bg-[#444] text-[#E0E0E0] rounded border-none font-medium cursor-pointer transition-colors hover:bg-[#555] disabled:opacity-50 disabled:cursor-not-allowed text-[14px]"
+          >
             Cancelar
           </button>
           
-          <button onClick={onSalvar} className="btn-primary" disabled={carregando}>
+          <button 
+            onClick={onSalvar} 
+            disabled={carregando}
+            className="px-4 py-2 bg-[#2196F3] text-white rounded border-none font-bold cursor-pointer transition-colors hover:bg-[#1e88e5] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-[14px] active:scale-95"
+          >
             {carregando ? 'Salvando...' : 'Salvar Observação'}
           </button>
         </div>
       </div>
     </div>
   );
-};
-
-/* --- ESTILOS --- */
-
-const toolbarStyle = {
-  display: 'flex', 
-  flexWrap: 'wrap',
-  gap: '10px', 
-  marginBottom: '10px', 
-  padding: '8px', 
-  backgroundColor: '#1e1e1e', 
-  border: '1px solid #444',
-  borderRadius: '4px',
-  flexShrink: 0
-};
-
-const groupStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '3px',
-  borderRight: '1px solid #444',
-  paddingRight: '10px'
-};
-
-const btnEditorStyle = {
-  backgroundColor: '#333',
-  color: '#eee',
-  border: '1px solid #555',
-  borderRadius: '3px',
-  padding: '4px 8px',
-  cursor: 'pointer',
-  fontSize: '12px',
-  minWidth: '32px'
-};
-
-const selectStyle = {
-  backgroundColor: '#333',
-  color: '#eee',
-  border: '1px solid #555',
-  borderRadius: '3px',
-  padding: '3px',
-  fontSize: '12px'
-};
-
-const editorAreaStyle = {
-  width: '100%',
-  overflowY: 'auto',
-  backgroundColor: '#0c0c0c',
-  color: '#64ff8a',
-  border: '1px solid #555',
-  borderRadius: '4px',
-  padding: '15px',
-  fontSize: '16px',
-  outline: 'none',
-  lineHeight: '1.6',
-  textAlign: 'left',
 };
