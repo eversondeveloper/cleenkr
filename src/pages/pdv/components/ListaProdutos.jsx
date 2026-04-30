@@ -1,6 +1,5 @@
 /* eslint-disable no-case-declarations */
 import Button from "../../../components/ui/Button";
-import { ListaProdutosStyled } from "./ListaProdutosStyled";
 
 const ListaProdutos = ({
   carregandoProdutos,
@@ -16,9 +15,11 @@ const ListaProdutos = ({
   
   if (carregandoProdutos) {
     return (
-      <ListaProdutosStyled>
-        <p className="mensagem-carregando">Carregando catálogo...</p>
-      </ListaProdutosStyled>
+      <div className="flex flex-col h-full w-full overflow-hidden">
+        <p className="text-[#666] text-center mt-[50px] text-sm italic">
+          Carregando catálogo...
+        </p>
+      </div>
     );
   }
 
@@ -51,23 +52,27 @@ const ListaProdutos = ({
 
   if (produtosOrdenados.length === 0) {
     return (
-      <ListaProdutosStyled>
-        <p className="mensagem-sem-produtos">
+      <div className="flex flex-col h-full w-full overflow-hidden">
+        <p className="text-[#666] text-center mt-[50px] text-sm italic">
           Nenhum produto encontrado com os filtros aplicados.
         </p>
-      </ListaProdutosStyled>
+      </div>
     );
   }
 
   return (
-    <ListaProdutosStyled>
-      <div className="barra-ferramentas-catalogo">
-        <div className="seletor-organizacao-container">
-          <label>ORDENAR POR:</label>
+    <div className="flex flex-col h-full w-full overflow-hidden">
+      
+      {/* Barra de Ferramentas / Cabeçalho da Lista */}
+      <div className="flex justify-between items-center px-4 py-2.5 bg-[#1a1a1a] border-b border-[#282828] shrink-0">
+        <div className="flex items-center gap-2.5">
+          <label className="text-[10px] font-extrabold text-[#555] tracking-widest">
+            ORDENAR POR:
+          </label>
           <select
             value={modoOrganizacao}
             onChange={(e) => setModoOrganizacao(e.target.value)}
-            className="select-organizacao"
+            className="bg-[#252525] text-white border border-[#333] px-3 py-1.5 rounded-md text-[11px] font-semibold outline-none cursor-pointer transition-colors focus:border-[#646cff]"
           >
             {OPCOES_ORGANIZACAO.map((opcao) => (
               <option key={opcao.valor} value={opcao.valor}>
@@ -76,13 +81,16 @@ const ListaProdutos = ({
             ))}
           </select>
         </div>
-        <div className="badge-contagem">
+        
+        {/* Badge Contagem */}
+        <div className="text-[10px] font-extrabold text-[#888] bg-[#121212] px-2.5 py-1 rounded-full border border-[#282828]">
           {produtosOrdenados.length} PRODUTOS
         </div>
       </div>
 
-      <div className="grid-produtos-scroll">
-        <div className="buttons-catalogo">
+      {/* Grid de Produtos com Scroll Customizado */}
+      <div className="flex-1 overflow-y-auto p-2.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#333] [&::-webkit-scrollbar-thumb]:rounded-full">
+        <div className="grid grid-cols-3 gap-2 w-full justify-items-stretch items-start">
           {produtosOrdenados.map((item, i) => (
             <Button
               key={item.id_produto}
@@ -104,7 +112,8 @@ const ListaProdutos = ({
           ))}
         </div>
       </div>
-    </ListaProdutosStyled>
+      
+    </div>
   );
 };
 
