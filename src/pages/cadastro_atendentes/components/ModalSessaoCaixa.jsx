@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BotaoPrimario, BotaoSecundario, Flex, Input, Select } from '../CadastroAtendentesStyled';
-import { useEmpresa } from '../hooks/useEmpresa'; // IMPORTADO
+import { useEmpresa } from '../hooks/useEmpresa'; 
 
 export const ModalSessaoCaixa = ({ 
   mostrar, 
@@ -38,7 +37,6 @@ export const ModalSessaoCaixa = ({
     }
   }, [mostrar, atendentePreSelecionado]);
 
-  // Funções de validação, formatação e submit mantidas...
   const validarFormulario = () => {
     const novosErros = {};
     if (!dadosSessao.id_atendente) novosErros.id_atendente = 'Selecione um atendente';
@@ -84,49 +82,41 @@ export const ModalSessaoCaixa = ({
   const atendentesDisponiveis = atendentes.filter(a => a.ativo);
   
   return (
-    <div className="modal-overlay" style={{
-      position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-      backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center',
-      justifyContent: 'center', zIndex: 3000
-    }}>
-      <div className="modal-content" style={{ 
-        backgroundColor: '#2d2d2d', 
-        padding: '30px', 
-        borderRadius: '12px', 
-        width: '550px',
-        border: '1px solid #444'
-      }}>
+    <div className="fixed inset-0 z-3000 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="bg-card p-6 md:p-8 rounded-xl w-full max-w-[550px] border border-border shadow-2xl relative">
+        
         {/* CABEÇALHO DO MODAL COM DADOS DA EMPRESA */}
-        <div className="modal-header" style={{ marginBottom: '20px', borderBottom: '1px solid #444', paddingBottom: '15px' }}>
-          <Flex justify="space-between" align="center">
-            <div>
-              <h2 style={{ color: '#FF9800', margin: 0, fontSize: '1.4rem' }}>
-                💰 Abrir Sessão de Caixa
-              </h2>
-              {empresa && (
-                <p style={{ color: '#64ff8a', margin: '5px 0 0 0', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                  {empresa.nome_fantasia || empresa.razao_social} <span style={{ color: '#888' }}>| CNPJ: {empresa.cnpj}</span>
-                </p>
-              )}
-            </div>
-            <button
-              onClick={onClose}
-              style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }}
-            >
-              ✕
-            </button>
-          </Flex>
+        <div className="flex justify-between items-start mb-6 pb-4 border-b border-border">
+          <div className="flex flex-col">
+            <h2 className="text-primary m-0 text-xl md:text-2xl font-medium">
+              💰 Abrir Sessão de Caixa
+            </h2>
+            {empresa && (
+              <p className="text-success mt-1.5 mb-0 text-[13px] font-bold tracking-wide">
+                {empresa.nome_fantasia || empresa.razao_social} <span className="text-muted-foreground font-normal ml-1">| CNPJ: {empresa.cnpj}</span>
+              </p>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className="bg-transparent border-none text-muted-foreground text-3xl cursor-pointer hover:text-foreground transition-colors leading-none p-0"
+          >
+            ✕
+          </button>
         </div>
 
-        <div className="modal-body">
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', color: '#E0E0E0', marginBottom: '8px', fontSize: '0.9rem' }}>Selecione o Atendente *</label>
-              <Select
+        <div>
+          <form onSubmit={handleSubmit} className="m-0">
+            <div className="flex flex-col mb-5">
+              <label className="text-foreground text-sm font-medium mb-2">Selecione o Atendente *</label>
+              <select
                 value={dadosSessao.id_atendente}
                 onChange={(e) => handleChange('id_atendente', e.target.value)}
                 disabled={enviando || sessaoAtual}
-                style={{ borderColor: erros.id_atendente ? '#E53935' : undefined }}
+                className={`w-full p-2.5 bg-background text-foreground border rounded-md text-sm outline-none transition-colors appearance-none bg-no-repeat bg-position-[right_10px_center] bg-size-[8px_10px] ${erros.id_atendente ? 'border-destructive focus:border-destructive' : 'border-border focus:border-primary'}`}
+                style={{
+                    backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23E0E0E0' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e")`
+                }}
               >
                 <option value="">Escolha um operador disponível...</option>
                 {atendentesDisponiveis.map(atendente => (
@@ -134,16 +124,16 @@ export const ModalSessaoCaixa = ({
                     {atendente.nome}
                   </option>
                 ))}
-              </Select>
+              </select>
             </div>
 
-            <div style={{ marginBottom: '25px' }}>
-              <label style={{ display: 'block', color: '#E0E0E0', marginBottom: '8px', fontSize: '0.9rem' }}>
+            <div className="flex flex-col mb-6">
+              <label className="text-foreground text-sm font-medium mb-2">
                 Valor de Fundo de Caixa (Troco Inicial)
               </label>
-              <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#888' }}>R$</span>
-                <Input
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium">R$</span>
+                <input
                   ref={inputValorRef}
                   type="text"
                   placeholder="0,00"
@@ -151,21 +141,27 @@ export const ModalSessaoCaixa = ({
                   onChange={(e) => handleChange('valor_inicial', formatarValor(e.target.value))}
                   onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                   disabled={enviando || sessaoAtual}
-                  style={{ paddingLeft: '40px', borderColor: erros.valor_inicial ? '#E53935' : undefined }}
+                  className={`w-full p-2.5 pl-9 bg-background text-foreground border rounded-md text-sm outline-none transition-colors ${erros.valor_inicial ? 'border-destructive focus:border-destructive' : 'border-border focus:border-primary'}`}
                 />
               </div>
             </div>
 
-            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <BotaoSecundario type="button" onClick={onClose} disabled={enviando}>
+            <div className="flex justify-end gap-3 pt-5 border-t border-border">
+              <button 
+                type="button" 
+                onClick={onClose} 
+                disabled={enviando}
+                className="px-4 py-2 bg-muted text-foreground rounded-md text-sm font-medium border-none cursor-pointer hover:bg-muted-foreground/20 transition-colors disabled:opacity-50"
+              >
                 Cancelar
-              </BotaoSecundario>
-              <BotaoPrimario 
+              </button>
+              <button 
                 type="submit" 
                 disabled={enviando || sessaoAtual || !dadosSessao.id_atendente}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-bold border-none cursor-pointer hover:brightness-110 transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 shadow-sm"
               >
                 {enviando ? 'Processando...' : 'Confirmar Abertura'}
-              </BotaoPrimario>
+              </button>
             </div>
           </form>
         </div>
