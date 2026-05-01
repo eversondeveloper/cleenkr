@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { CadastroAtendentesStyled } from './CadastroAtendentesStyled';
 import { useAtendentes } from './hooks/useAtendentes';
 import { useSessoesCaixa } from './hooks/useSessoesCaixa';
 import { useFiltrosAtendentes } from './hooks/useFiltrosAtendentes'; 
@@ -104,16 +103,29 @@ export const CadastroAtendentes = ({ onResetEstado, onAtualizarEmpresa }) => {
     }
   };
 
-  if (carregandoEmpresa) return <div style={{ color: '#E0E0E0', padding: '40px', textAlign: 'center', background: '#1e1e1e', height: '100vh' }}>Sincronizando configurações...</div>;
+  // --- ESTADO DE CARREGAMENTO ---
+  if (carregandoEmpresa) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-background text-foreground text-lg animate-pulse">
+        Sincronizando configurações...
+      </div>
+    );
+  }
 
+  // --- TELA DE BLOQUEIO (SEM EMPRESA) ---
   if (!empresa) {
     return (
-      <CadastroAtendentesStyled>
-        <div className="cabecalho"><h1>Configuração Obrigatória</h1></div>
-        <div className="container-bloqueio-caixa">
-          <div className="card-bloqueio" style={{ border: '1px solid #FF9800', padding: '30px', background: '#2d2d2d', borderRadius: '12px', textAlign: 'center' }}>
-            <h2 style={{ color: '#FF9800', fontWeight: '300' }}>🏢 Empresa não identificada</h2>
-            <p style={{ margin: '15px 0', color: '#A0A0A0' }}>Cadastre os dados da empresa antes de gerenciar operadores.</p>
+      <div className="flex flex-col w-[98%] h-[calc(100vh-120px)] mt-24 mb-5 mx-auto p-6 md:p-8 bg-background rounded-xl shadow-2xl border border-border overflow-y-auto box-border text-foreground [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/50">
+        <div className="flex flex-col gap-1.5 items-center justify-center pb-6 border-b border-border shrink-0">
+          <h1 className="text-3xl font-light text-foreground m-0">Configuração Obrigatória</h1>
+        </div>
+        
+        <div className="flex flex-1 items-center justify-center mt-8">
+          <div className="p-8 bg-card border border-primary rounded-xl text-center shadow-lg w-full max-w-xl">
+            <h2 className="text-primary font-light text-2xl m-0">🏢 Empresa não identificada</h2>
+            <p className="mt-4 mb-6 text-muted-foreground text-sm">
+              Cadastre os dados da empresa antes de gerenciar operadores.
+            </p>
             <SecaoEmpresa 
                 empresa={null} 
                 onCadastrar={async (dados) => {
@@ -124,17 +136,19 @@ export const CadastroAtendentes = ({ onResetEstado, onAtualizarEmpresa }) => {
             />
           </div>
         </div>
-      </CadastroAtendentesStyled>
+      </div>
     );
   }
 
+  // --- RENDERIZAÇÃO PRINCIPAL ---
   return (
-    <CadastroAtendentesStyled>
-      <div className="cabecalho">
-        <h1>Gestão de Operadores e Caixa</h1>
+    <div className="flex flex-col gap-8 w-[98%] h-[calc(100vh-120px)] mt-24 mb-5 mx-auto p-6 md:p-8 bg-background rounded-xl shadow-2xl border border-border overflow-y-auto box-border text-foreground [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/50">
+      
+      <div className="flex flex-col gap-1.5 items-center justify-center pb-6 border-b border-border shrink-0">
+        <h1 className="text-3xl font-light text-foreground m-0">Gestão de Operadores e Caixa</h1>
       </div>
 
-      <div className="secao-empresa-container">
+      <div className="w-full">
         <SecaoEmpresa 
             empresa={empresa}
             onCadastrar={cadastrarEmpresa}
@@ -143,8 +157,8 @@ export const CadastroAtendentes = ({ onResetEstado, onAtualizarEmpresa }) => {
         />
       </div>
 
-      <div className="secao-filtros">
-        <h3 className="titulo-secao-filtros" style={{ color: '#E0E0E0', fontSize: '14px', marginBottom: '15px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '1px' }}>
+      <div className="p-5 bg-card rounded-lg border border-border">
+        <h3 className="text-foreground text-sm mb-4 font-medium uppercase tracking-wider m-0">
             Filtros de Busca
         </h3>
         <SecaoFiltrosAtendentes
@@ -156,7 +170,7 @@ export const CadastroAtendentes = ({ onResetEstado, onAtualizarEmpresa }) => {
         />
       </div>
 
-      <div className="secao-resumo secao-acoes">
+      <div className="p-5 bg-card rounded-lg border border-border">
         <SecaoAcoesAtendentes
           onNovoAtendente={() => { setAtendenteEditando(null); setMostrarModalAtendente(true); }}
           onAbrirSessao={() => { setAtendenteSelecionadoParaSessao(null); setMostrarModalSessao(true); }}
@@ -173,13 +187,12 @@ export const CadastroAtendentes = ({ onResetEstado, onAtualizarEmpresa }) => {
         />
       </div>
 
-      {/* Nome alterado para evitar conflitos de estilo que escondiam a tabela */}
-      <div className="area-tabela-operadores">
-        <div className="tabela-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h3 style={{ color: '#FF9800', fontSize: '18px', fontWeight: '400', margin: 0 }}>
+      <div className="flex flex-col w-full">
+        <div className="flex justify-between items-center mb-5">
+            <h3 className="text-primary text-lg font-normal m-0">
                 📋 Operadores Cadastrados
             </h3>
-            <span style={{ color: '#A0A0A0', fontSize: '12px' }}>
+            <span className="text-muted-foreground text-xs">
                 Total: {atendentesFiltrados?.length || 0}
             </span>
         </div>
@@ -194,8 +207,8 @@ export const CadastroAtendentes = ({ onResetEstado, onAtualizarEmpresa }) => {
             onAbrirSessao={(id) => { setAtendenteSelecionadoParaSessao(id); setMostrarModalSessao(true); }}
           />
         ) : (
-          <div className="vazio-container" style={{ padding: '60px', textAlign: 'center', background: '#2d2d2d', borderRadius: '12px', color: '#666', border: '1px dashed #444' }}>
-            <p style={{ fontSize: '16px' }}>Nenhum operador encontrado para os critérios selecionados.</p>
+          <div className="p-14 text-center bg-card rounded-xl text-muted-foreground border border-dashed border-border">
+            <p className="text-base m-0">Nenhum operador encontrado para os critérios selecionados.</p>
           </div>
         )}
       </div>
@@ -215,6 +228,6 @@ export const CadastroAtendentes = ({ onResetEstado, onAtualizarEmpresa }) => {
         sessaoAtual={sessaoAtual}
         atendentePreSelecionado={atendenteSelecionadoParaSessao}
       />
-    </CadastroAtendentesStyled>
+    </div>
   );
 };
