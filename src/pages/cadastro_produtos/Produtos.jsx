@@ -1,19 +1,7 @@
-// pages/Produtos.jsx
 import React from 'react';
-// Importa os hooks que fornecem lógica e estado
 import { useProdutos } from './hooks/useProdutos';
 import { useArrastaSolta } from './hooks/useArrastaSolta'; 
-// Importa o componente do Modal
 import { ProdutosModal } from './components/ProdutosModal';
-// Importa os styled-components
-import { 
-    ProdutosStyled, 
-    SecaoBusca, 
-    InputBusca, 
-    TabelaProdutos, 
-    BotaoAcao, 
-    ContainerNovoProduto 
-} from './ProdutosStyled'; 
 
 export const Produtos = () => {
     // 1. Hook de Lógica Central (Estados e CRUD)
@@ -24,7 +12,6 @@ export const Produtos = () => {
         produtoEditando,
         dadosFormulario,
         exibirFormulario,
-        
         resetarFormulario,
         iniciarNovoCadastro,
         salvarProduto,
@@ -32,10 +19,7 @@ export const Produtos = () => {
         iniciarEdicao,
         manipularMudanca,
         produtosFiltrados,
-        
-        // NOVO: Importa a variável de validação do hook
         podeSalvar, 
-
     } = useProdutos();
 
     // 2. Hook de Drag-and-Drop (Reordenação)
@@ -47,91 +31,105 @@ export const Produtos = () => {
         handleDrop,
     } = useArrastaSolta(produtos, setProdutos);
 
-
     return (
-        <ProdutosStyled>
-            <h1>Gestão de Produtos e Serviços</h1>
+        <div className="flex flex-col w-[98%] h-[calc(100vh-120px)] mt-24 mb-5 mx-auto p-6 md:p-8 bg-background rounded-xl shadow-2xl border border-border overflow-y-auto box-border text-foreground [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/50">
+            
+            <h1 className="text-3xl font-light text-center mb-8 text-foreground m-0">
+                Gestão de Produtos e Serviços
+            </h1>
 
             {/* Seção de Cadastro */}
-            <ContainerNovoProduto>
-                <BotaoAcao onClick={iniciarNovoCadastro} $tipo="adicionar">
+            <div className="flex justify-end mb-6">
+                <button 
+                    onClick={iniciarNovoCadastro} 
+                    className="px-4 py-2 bg-primary text-primary-foreground font-medium rounded-md text-sm hover:brightness-110 active:scale-95 transition-all shadow-sm border-none cursor-pointer whitespace-nowrap"
+                >
                     + NOVO PRODUTO
-                </BotaoAcao>
-            </ContainerNovoProduto>
+                </button>
+            </div>
 
             {/* Seção de Busca */}
-            <SecaoBusca>
-                <InputBusca
+            <div className="flex gap-5 mb-8 p-4 bg-card rounded-lg border border-border">
+                <input
                     type="text"
                     placeholder="Buscar por ID, Nome ou Categoria..."
                     value={filtroBusca}
                     onChange={(e) => setFiltroBusca(e.target.value)}
+                    className="flex-1 p-2.5 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
                 />
-            </SecaoBusca>
+            </div>
 
-            <hr style={{ margin: '30px 0', borderTop: '1px solid #444' }} />
+            <hr className="my-8 border-t border-border" />
 
             {/* Mensagens de Status */}
-            {carregando && <p>Buscando dados...</p>}
-            {erro && <p style={{ color: 'red' }}>Erro: {erro}</p>}
+            {carregando && <p className="text-muted-foreground text-center animate-pulse">Buscando dados...</p>}
+            {erro && <p className="text-destructive text-center font-medium">Erro: {erro}</p>}
             
             {/* Tabela de Produtos */}
             {!carregando && produtosFiltrados.length > 0 && (
-                <TabelaProdutos>
-                    <thead>
-                        <tr>
-                            <th style={{ width: '30px' }}>#</th>
-                            <th>ID</th>
-                            <th>Descrição</th>
-                            <th>Categoria</th>
-                            <th>Preço</th>
-                            <th>Estoque</th>
-                            <th>Tipo</th>
-                            <th className="coluna-acoes">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {produtosFiltrados.map((produto, index) => (
-                            <tr 
-                                key={produto.id_produto}
-                                draggable
-                                onDragStart={(e) => handleDragStart(e, produto.id_produto)}
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={(e) => handleDrop(e, produto.id_produto)}
-                                style={{ 
-                                    opacity: arrastandoId === produto.id_produto ? 0.5 : 1, 
-                                    cursor: 'grab',
-                                    backgroundColor: produtoEditando?.id_produto === produto.id_produto ? '#2a4d69' : 'transparent',
-                                    transition: 'background-color 0.2s, opacity 0.2s'
-                                }}
-                            >
-                                <td>{index + 1}</td>
-                                <td>{produto.id_produto}</td>
-                                <td>{produto.descricao}</td>
-                                <td>{produto.categoria}</td>
-                                <td>R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}</td>
-                                <td>{produto.estoque_atual}</td>
-                                <td>{produto.tipo_item}</td>
-                                <td className="coluna-acoes">
-                                    {/* CORREÇÃO: Envolvendo botões no novo container flexível */}
-                                    <div className="container-botoes-acoes">
-                                        <BotaoAcao onClick={() => iniciarEdicao(produto)} $tipo="editar">
-                                            Editar
-                                        </BotaoAcao>
-                                        <BotaoAcao onClick={() => desativarProduto(produto.id_produto)} $tipo="desativar">
-                                            Desativar
-                                        </BotaoAcao>
-                                    </div>
-                                </td>
+                <div className="w-full overflow-x-auto pb-4">
+                    <table className="w-full border-collapse text-sm mt-5 table-auto text-left">
+                        <thead className="bg-card text-muted-foreground font-medium uppercase border-y border-border">
+                            <tr>
+                                <th className="p-3 w-10 whitespace-nowrap">#</th>
+                                <th className="p-3 whitespace-nowrap">ID</th>
+                                <th className="p-3 w-full min-w-[200px]">Descrição</th>
+                                <th className="p-3 whitespace-nowrap">Categoria</th>
+                                <th className="p-3 whitespace-nowrap">Preço</th>
+                                <th className="p-3 whitespace-nowrap">Estoque</th>
+                                <th className="p-3 whitespace-nowrap">Tipo</th>
+                                <th className="p-3 whitespace-nowrap text-right min-w-[180px]">Ações</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </TabelaProdutos>
+                        </thead>
+                        <tbody>
+                            {produtosFiltrados.map((produto, index) => (
+                                <tr 
+                                    key={produto.id_produto}
+                                    draggable
+                                    onDragStart={(e) => handleDragStart(e, produto.id_produto)}
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={(e) => handleDrop(e, produto.id_produto)}
+                                    className={`
+                                        cursor-grab transition-all border-b border-border hover:bg-muted/30 even:bg-muted/10
+                                        ${arrastandoId === produto.id_produto ? 'opacity-50' : 'opacity-100'}
+                                        ${produtoEditando?.id_produto === produto.id_produto ? 'bg-info/20' : ''}
+                                    `}
+                                >
+                                    <td className="p-3 whitespace-nowrap">{index + 1}</td>
+                                    <td className="p-3 whitespace-nowrap">{produto.id_produto}</td>
+                                    <td className="p-3 whitespace-normal leading-tight">{produto.descricao}</td>
+                                    <td className="p-3 whitespace-nowrap">{produto.categoria}</td>
+                                    <td className="p-3 whitespace-nowrap">R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}</td>
+                                    <td className="p-3 whitespace-nowrap">{produto.estoque_atual}</td>
+                                    <td className="p-3 whitespace-nowrap">{produto.tipo_item}</td>
+                                    <td className="p-3">
+                                        <div className="flex gap-2 justify-end">
+                                            <button 
+                                                onClick={() => iniciarEdicao(produto)} 
+                                                className="px-3 py-1.5 bg-info text-info-foreground rounded text-xs font-medium border-none cursor-pointer hover:brightness-110 active:scale-95 transition-all shadow-sm"
+                                            >
+                                                Editar
+                                            </button>
+                                            <button 
+                                                onClick={() => desativarProduto(produto.id_produto)} 
+                                                className="px-3 py-1.5 bg-destructive text-destructive-foreground rounded text-xs font-medium border-none cursor-pointer hover:brightness-110 active:scale-95 transition-all shadow-sm"
+                                            >
+                                                Desativar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             )}
             
             {/* Mensagem de Sem Resultados */}
-            {!carregando && produtosFiltrados.length === 0 && !erro && <p>Nenhum produto encontrado para o filtro.</p>}
+            {!carregando && produtosFiltrados.length === 0 && !erro && (
+                <p className="text-center text-muted-foreground mt-10">Nenhum produto encontrado para o filtro.</p>
+            )}
 
             {/* Modal de Edição/Cadastro */}
             <ProdutosModal
@@ -143,6 +141,6 @@ export const Produtos = () => {
                 resetarFormulario={resetarFormulario}
                 podeSalvar={podeSalvar} 
             />
-        </ProdutosStyled>
+        </div>
     );
 };
