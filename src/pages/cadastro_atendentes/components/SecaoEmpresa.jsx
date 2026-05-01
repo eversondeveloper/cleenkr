@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 export const SecaoEmpresa = ({ empresa, onCadastrar, onAtualizar, onDeletar }) => {
   const [editando, setEditando] = useState(false);
@@ -89,31 +89,37 @@ export const SecaoEmpresa = ({ empresa, onCadastrar, onAtualizar, onDeletar }) =
     if (res?.sucesso) setEditando(false);
   };
 
-  const inputStyle = {
-    padding: '12px',
-    background: '#252525',
-    border: '1px solid #444',
-    color: 'white',
-    borderRadius: '6px',
-    fontSize: '14px',
-    outline: 'none',
-    width: '100%',
-    boxSizing: 'border-box'
-  };
-
   if (empresa && !editando) {
     return (
-      <div style={{ background: '#1a1a1a', padding: '25px', borderRadius: '12px', border: '1px solid #333', marginBottom: '25px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div className="bg-card p-6 rounded-xl border border-border shadow-sm w-full">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
           <div>
-            <span style={{ background: '#64ff8a22', color: '#64ff8a', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>EMPRESA ATIVA</span>
-            <h2 style={{ color: 'white', margin: '10px 0 5px 0' }}>{empresa.nome_fantasia || empresa.razao_social}</h2>
-            <p style={{ color: '#aaa', fontSize: '14px', margin: 0 }}><strong>CNPJ:</strong> {empresa.cnpj}</p>
-            <p style={{ color: '#777', fontSize: '13px', marginTop: '5px' }}>📍 {empresa.endereco}, {empresa.cidade}-{empresa.estado}</p>
+            <span className="bg-success/20 text-success px-2.5 py-1 rounded text-[11px] font-bold tracking-wide">
+                EMPRESA ATIVA
+            </span>
+            <h2 className="text-foreground text-xl mt-3 mb-1 font-medium">
+                {empresa.nome_fantasia || empresa.razao_social}
+            </h2>
+            <p className="text-muted-foreground text-sm m-0 mt-1">
+                <strong className="text-foreground font-medium">CNPJ:</strong> {empresa.cnpj}
+            </p>
+            <p className="text-muted-foreground text-sm m-0 mt-1">
+                📍 {empresa.endereco}, {empresa.cidade}-{empresa.estado}
+            </p>
           </div>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={prepararEdicao} style={{ background: '#2196F3', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Editar</button>
-            <button onClick={() => onDeletar(empresa.id_empresa)} style={{ background: 'transparent', color: '#ff4b4b', border: '1px solid #ff4b4b', padding: '10px 15px', borderRadius: '6px', cursor: 'pointer' }}>Apagar</button>
+          <div className="flex gap-3 mt-2 md:mt-0">
+            <button 
+                onClick={prepararEdicao} 
+                className="bg-info text-info-foreground border-none px-5 py-2.5 rounded-md cursor-pointer font-bold hover:brightness-110 active:scale-95 transition-all text-sm shadow-sm"
+            >
+                Editar
+            </button>
+            <button 
+                onClick={() => onDeletar(empresa.id_empresa)} 
+                className="bg-transparent text-destructive border border-destructive px-4 py-2.5 rounded-md cursor-pointer hover:bg-destructive/10 active:scale-95 transition-all text-sm font-medium"
+            >
+                Apagar
+            </button>
           </div>
         </div>
       </div>
@@ -121,68 +127,82 @@ export const SecaoEmpresa = ({ empresa, onCadastrar, onAtualizar, onDeletar }) =
   }
 
   return (
-    <div style={{ background: '#1a1a1a', padding: '25px', borderRadius: '12px', border: editando ? '1px solid #2196F3' : '1px dashed #FF9800', marginBottom: '25px' }}>
+    <div className={`bg-card p-6 md:p-8 rounded-xl w-full border ${editando ? 'border-info' : 'border-dashed border-primary'} shadow-sm`}>
       {(!editando && !empresa) ? (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          <p style={{ color: '#FF9800', fontSize: '16px' }}>⚠️ Nenhuma empresa emissora configurada.</p>
-          <button onClick={() => setEditando(true)} style={{ background: '#FF9800', color: 'black', border: 'none', padding: '15px 30px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' }}>
+        <div className="text-center py-5">
+          <p className="text-warning text-base m-0 mb-4 font-medium">
+            ⚠️ Nenhuma empresa emissora configurada.
+          </p>
+          <button 
+            onClick={() => setEditando(true)} 
+            className="bg-primary text-primary-foreground border-none px-8 py-3.5 rounded-lg font-bold cursor-pointer mt-2 hover:brightness-110 active:scale-95 transition-all text-sm shadow-md tracking-wide"
+          >
             + CONFIGURAR AGORA
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '15px' }}>
-          <h3 style={{ gridColumn: 'span 6', color: '#2196F3', margin: '0 0 5px 0' }}>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-6 gap-4 m-0">
+          <h3 className="md:col-span-6 text-info text-lg font-medium m-0 mb-2 border-b border-border pb-2">
             {editando ? "📝 Editar Cadastro" : "🏢 Novo Cadastro de Empresa"}
           </h3>
           
-          <div style={{ gridColumn: 'span 4' }}>
-            <label style={{ color: '#888', fontSize: '11px', marginBottom: '4px', display: 'block' }}>RAZÃO SOCIAL</label>
-            <input name="razaoSocial" required value={form.razaoSocial} onChange={handleChange} style={inputStyle} />
+          <div className="md:col-span-4 flex flex-col">
+            <label className="text-muted-foreground text-xs font-medium tracking-wide mb-1.5 uppercase">RAZÃO SOCIAL</label>
+            <input name="razaoSocial" required value={form.razaoSocial} onChange={handleChange} className="p-3 bg-background border border-border text-foreground rounded-md text-sm outline-none focus:border-primary transition-colors w-full" />
           </div>
 
-          <div style={{ gridColumn: 'span 2' }}>
-            <label style={{ color: '#888', fontSize: '11px', marginBottom: '4px', display: 'block' }}>CNPJ (Somente números)</label>
-            <input name="cnpj" required value={form.cnpj} onChange={handleChange} style={inputStyle} placeholder="00.000.000/0000-00" />
+          <div className="md:col-span-2 flex flex-col">
+            <label className="text-muted-foreground text-xs font-medium tracking-wide mb-1.5 uppercase">CNPJ</label>
+            <input name="cnpj" required value={form.cnpj} onChange={handleChange} className="p-3 bg-background border border-border text-foreground rounded-md text-sm outline-none focus:border-primary transition-colors w-full" placeholder="00.000.000/0000-00" />
           </div>
 
-          <div style={{ gridColumn: 'span 3' }}>
-            <label style={{ color: '#888', fontSize: '11px', marginBottom: '4px', display: 'block' }}>NOME FANTASIA</label>
-            <input name="nomeFantasia" value={form.nomeFantasia} onChange={handleChange} style={inputStyle} />
+          <div className="md:col-span-3 flex flex-col">
+            <label className="text-muted-foreground text-xs font-medium tracking-wide mb-1.5 uppercase">NOME FANTASIA</label>
+            <input name="nomeFantasia" value={form.nomeFantasia} onChange={handleChange} className="p-3 bg-background border border-border text-foreground rounded-md text-sm outline-none focus:border-primary transition-colors w-full" />
           </div>
 
-          <div style={{ gridColumn: 'span 3' }}>
-            <label style={{ color: '#888', fontSize: '11px', marginBottom: '4px', display: 'block' }}>INSCRIÇÃO ESTADUAL</label>
-            <input name="inscricaoEstadual" value={form.inscricaoEstadual} onChange={handleChange} style={inputStyle} />
+          <div className="md:col-span-3 flex flex-col">
+            <label className="text-muted-foreground text-xs font-medium tracking-wide mb-1.5 uppercase">INSCRIÇÃO ESTADUAL</label>
+            <input name="inscricaoEstadual" value={form.inscricaoEstadual} onChange={handleChange} className="p-3 bg-background border border-border text-foreground rounded-md text-sm outline-none focus:border-primary transition-colors w-full" />
           </div>
 
-          <div style={{ gridColumn: 'span 2' }}>
-            <label style={{ color: '#888', fontSize: '11px', marginBottom: '4px', display: 'block' }}>CEP</label>
-            <input name="cep" value={form.cep} onChange={handleChange} style={inputStyle} placeholder="00000-000" />
+          <div className="md:col-span-2 flex flex-col">
+            <label className="text-muted-foreground text-xs font-medium tracking-wide mb-1.5 uppercase">CEP</label>
+            <input name="cep" value={form.cep} onChange={handleChange} className="p-3 bg-background border border-border text-foreground rounded-md text-sm outline-none focus:border-primary transition-colors w-full" placeholder="00000-000" />
           </div>
 
-          <div style={{ gridColumn: 'span 4' }}>
-            <label style={{ color: '#888', fontSize: '11px', marginBottom: '4px', display: 'block' }}>ENDEREÇO</label>
-            <input name="endereco" value={form.endereco} onChange={handleChange} style={inputStyle} />
+          <div className="md:col-span-4 flex flex-col">
+            <label className="text-muted-foreground text-xs font-medium tracking-wide mb-1.5 uppercase">ENDEREÇO</label>
+            <input name="endereco" value={form.endereco} onChange={handleChange} className="p-3 bg-background border border-border text-foreground rounded-md text-sm outline-none focus:border-primary transition-colors w-full" />
           </div>
 
-          <div style={{ gridColumn: 'span 3' }}>
-            <label style={{ color: '#888', fontSize: '11px', marginBottom: '4px', display: 'block' }}>CIDADE</label>
-            <input name="cidade" value={form.cidade} onChange={handleChange} style={inputStyle} />
+          <div className="md:col-span-3 flex flex-col">
+            <label className="text-muted-foreground text-xs font-medium tracking-wide mb-1.5 uppercase">CIDADE</label>
+            <input name="cidade" value={form.cidade} onChange={handleChange} className="p-3 bg-background border border-border text-foreground rounded-md text-sm outline-none focus:border-primary transition-colors w-full" />
           </div>
 
-          <div style={{ gridColumn: 'span 1' }}>
-            <label style={{ color: '#888', fontSize: '11px', marginBottom: '4px', display: 'block' }}>UF</label>
-            <input name="estado" maxLength="2" value={form.estado} onChange={handleChange} style={inputStyle} />
+          <div className="md:col-span-1 flex flex-col">
+            <label className="text-muted-foreground text-xs font-medium tracking-wide mb-1.5 uppercase">UF</label>
+            <input name="estado" maxLength="2" value={form.estado} onChange={handleChange} className="p-3 bg-background border border-border text-foreground rounded-md text-sm outline-none focus:border-primary transition-colors w-full" />
           </div>
 
-          <div style={{ gridColumn: 'span 2' }}>
-            <label style={{ color: '#888', fontSize: '11px', marginBottom: '4px', display: 'block' }}>TELEFONE</label>
-            <input name="telefone" value={form.telefone} onChange={handleChange} style={inputStyle} />
+          <div className="md:col-span-2 flex flex-col">
+            <label className="text-muted-foreground text-xs font-medium tracking-wide mb-1.5 uppercase">TELEFONE</label>
+            <input name="telefone" value={form.telefone} onChange={handleChange} className="p-3 bg-background border border-border text-foreground rounded-md text-sm outline-none focus:border-primary transition-colors w-full" />
           </div>
 
-          <div style={{ gridColumn: 'span 6', display: 'flex', gap: '12px', marginTop: '10px' }}>
-             <button type="button" onClick={() => setEditando(false)} style={{ background: '#333', color: 'white', border: 'none', padding: '15px', flex: 1, borderRadius: '8px', cursor: 'pointer' }}>CANCELAR</button>
-             <button type="submit" style={{ background: '#64ff8a', color: 'black', border: 'none', padding: '15px', flex: 2, borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+          <div className="md:col-span-6 flex flex-col sm:flex-row gap-3 mt-4 pt-4 border-t border-border">
+             <button 
+                type="button" 
+                onClick={() => setEditando(false)} 
+                className="bg-muted text-foreground border-none p-3.5 sm:flex-1 rounded-lg cursor-pointer hover:bg-muted-foreground/20 font-medium active:scale-95 transition-all text-sm"
+            >
+                CANCELAR
+            </button>
+             <button 
+                type="submit" 
+                className="bg-success text-black border-none p-3.5 sm:flex-2 rounded-lg font-bold cursor-pointer hover:brightness-110 active:scale-95 transition-all text-sm shadow-sm"
+            >
                 {editando ? "ATUALIZAR DADOS" : "CONCLUIR CADASTRO"}
              </button>
           </div>
