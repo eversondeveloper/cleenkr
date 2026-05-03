@@ -1,9 +1,9 @@
 // src/lib/modules/auth/service.js
-import { api } from '../../../api/client';
+import { apiClient } from '../../../api/apiClient';
 
 export const authService = {
   async login(credenciais) {
-    const resposta = await api.post('/auth/login', credenciais);
+    const resposta = await apiClient.post('/auth/login', credenciais);
     if (resposta && resposta.token) {
       localStorage.setItem('scleenkr_token', resposta.token);
     }

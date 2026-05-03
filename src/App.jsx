@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { api } from "./api/client";
+import { apiClient } from "./api/apiClient";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom"; 
 import { Relatorios } from "./pages/relatorio_vendas/Relatorios";
 import { Produtos } from "./pages/cadastro_produtos/Produtos";
@@ -69,7 +69,7 @@ function App() {
 
   const carregarDadosEmpresa = useCallback(async () => {
     try {
-      const dados = await api.get("/empresas");
+      const dados = await apiClient.get("/empresas");
       setEmpresaSelecionada(dados && dados.length > 0 ? dados[0] : null);
     } catch (erro) {
       console.error("Erro ao carregar empresas:", erro);
