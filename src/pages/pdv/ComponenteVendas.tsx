@@ -1,14 +1,15 @@
 // src/pages/pdv/ComponenteVendas.tsx
-import { useRef, useCallback, JSX } from 'react';
+import { useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '@/contexts/AppContext';
 
-// Hooks (ainda não convertidos - TODO: tipar)
+// Hooks
 import { useVendas } from './hooks/useVendas';
 import { useFiltros } from './hooks/useFiltros';
 import { useAtalhos } from './hooks/useAtalhos';
 import { useOrganizacao } from './hooks/useOrganizacao';
 
-// Componentes filhos (ainda não convertidos - TODO: tipar)
+// Componentes filhos
 import ToastMensagem from './components/ToastMensagem';
 import FiltrosCatalogo from './components/FiltrosCatalogo';
 import ListaProdutos from './components/ListaProdutos';
@@ -19,10 +20,6 @@ import ResumoVenda from './components/ResumoVenda';
 // Layout
 import { SecaoPagina } from '../../components/layout/SecaoPagina';
 
-// Modelos
-import type { Empresa } from '@/lib/models/Empresa';
-import type { SessaoCaixa } from '@/lib/models/SessaoCaixa';
-
 // Sons
 import somMetodosPagamento from '/sounds/efeitos/metodos_pagamento.mp3';
 import somClickArquivo from '/sounds/efeitos/selecionar1.mp3';
@@ -30,24 +27,8 @@ import somClickArquivoMenos from '/sounds/efeitos/selecionarmenos.mp3';
 
 const METODOS_NAVEGACAO = ['Dinheiro', 'Crédito', 'Débito', 'Pix', 'Misto'] as const;
 
-// ---------------------------------------------------------
-// Props do componente (agora tipadas)
-// ---------------------------------------------------------
-interface ComponenteVendasProps {
-  sessaoAtual: SessaoCaixa | null;
-  temAtendentes: boolean;
-  empresaGlobal: Empresa | null;
-  somStatus: boolean;  
-}
-
-// ---------------------------------------------------------
-// Componente principal
-// ---------------------------------------------------------
-export default function ComponenteVendas({
-  sessaoAtual,
-  temAtendentes,
-  empresaGlobal,
-}: ComponenteVendasProps): JSX.Element {
+export default function ComponenteVendas() {
+  const { empresaSelecionada, sessaoAtual, temAtendentes, statusSom } = useAppContext();
   const navigate = useNavigate();
 
   // Áudios
@@ -70,7 +51,6 @@ export default function ComponenteVendas({
     audioClickProdutoMenos.current.play().catch(() => {});
   }, []);
 
-  // TODO: converter hooks abaixo para retornarem tipos específicos
   const {
     produtosDB,
     produtosSelecionados,
@@ -100,7 +80,7 @@ export default function ComponenteVendas({
     handleQuantidadeChange,
     finalizarVenda,
     cancelarVenda,
-  }: any = useVendas(sessaoAtual); // TODO: tipar useVendas
+  }: any = useVendas(sessaoAtual);
 
   const {
     filtroCategoriasSelecionadas,
@@ -115,10 +95,9 @@ export default function ComponenteVendas({
     toggleCategoriaFiltro,
     setFiltroTipoItem,
     limparFiltros,
-  }: any = useFiltros(produtosDB); // TODO: tipar useFiltros
+  }: any = useFiltros(produtosDB);
 
-  const { modoOrganizacao, setModoOrganizacao, OPCOES_ORGANIZACAO }: any =
-    useOrganizacao(); // TODO: tipar useOrganizacao
+  const { modoOrganizacao, setModoOrganizacao, OPCOES_ORGANIZACAO }: any = useOrganizacao();
 
   const handleFinalizarVendaComLimpeza = useCallback(() => {
     finalizarVenda(() => {
@@ -164,7 +143,7 @@ export default function ComponenteVendas({
     'py-3 px-6 rounded-md font-bold cursor-pointer text-base transition-all hover:-translate-y-0.5 text-white border-none shadow-sm';
 
   // --- TELA DE ERRO: EMPRESA NÃO CONFIGURADA ---
-  if (!empresaGlobal) {
+  if (!empresaSelecionada) {
     return (
       <SecaoPagina>
         <div className="w-full h-full flex items-center justify-center">
@@ -268,7 +247,7 @@ export default function ComponenteVendas({
                 removerProduto={removerProduto}
                 handleQuantidadeChange={handleQuantidadeChange}
                 totalGeral={totalGeral}
-                dadosEmpresa={empresaGlobal}
+                dadosEmpresa={empresaSelecionada}
                 somClick={tocarSomProduto}
                 somClickMenos={tocarSomProdutoMenos}
               />
@@ -314,7 +293,7 @@ export default function ComponenteVendas({
         ) : (
           <div className="flex flex-col items-center justify-center w-full h-full text-center gap-5">
             <div className="text-3xl font-extrabold text-muted-foreground tracking-widest opacity-50 uppercase">
-              {empresaGlobal?.nome_fantasia || 'EVERSCASH'}
+              {empresaSelecionada?.nome_fantasia || 'EVERSCASH'}
             </div>
             <div>
               <h2 className="bg-success text-success-foreground px-12 py-4 rounded-full text-2xl font-bold shadow-lg shadow-success/40 animate-pulse">

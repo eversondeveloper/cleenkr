@@ -1,15 +1,12 @@
 // src/pages/cadastro_produtos/Produtos.tsx
+import { useAppContext } from '@/contexts/AppContext';
 import { useProdutos } from './hooks/useProdutos';
 import { useArrastaSolta } from './hooks/useArrastaSolta';
 import { ProdutosModal } from './components/ProdutosModal';
 
-// Props que o App.tsx está passando
-interface ProdutosProps {
-  empresaSelecionada: any; // substitua por Empresa | null quando possível
-  somStatus: boolean;
-}
+export const Produtos = () => {
+  const { empresaSelecionada, statusSom } = useAppContext();
 
-export const Produtos: React.FC<ProdutosProps> = ({ empresaSelecionada, somStatus }) => {
   // 1. Hook de Lógica Central (Estados e CRUD)
   const {
     produtos,

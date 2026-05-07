@@ -1,5 +1,6 @@
 // src/pages/cadastro_atendentes/CadastroAtendentes.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useAppContext } from '@/contexts/AppContext';
 import { useAtendentes } from './hooks/useAtendentes';
 import { useSessoesCaixa } from './hooks/useSessoesCaixa';
 import { useFiltrosAtendentes } from './hooks/useFiltrosAtendentes';
@@ -13,22 +14,17 @@ import { TabelaAtendentes } from './components/TabelaAtendentes';
 import { ModalAtendente } from './components/ModalAtendente';
 import { ModalSessaoCaixa } from './components/ModalSessaoCaixa';
 
-// Tipos (pode ajustar futuramente)
-interface CadastroAtendentesProps {
-  empresaSelecionada: any; // substitua por Empresa | null quando possível
-  somStatus: boolean;
-  onResetEstado: (tipo: 'EMPRESA' | 'SESSAO' | 'ATENDENTE') => void;
-  onAtualizarEmpresa: () => Promise<void>;
-  buscarSessaoAtual: () => Promise<any>;
-}
+export const CadastroAtendentes = () => {
+  // Contexto global
+  const {
+    empresaSelecionada,
+    statusSom,
+    resetarSistemaLocal,
+    carregarDadosEmpresa,
+    buscarSessaoAtual,
+  } = useAppContext();
 
-export const CadastroAtendentes: React.FC<CadastroAtendentesProps> = ({
-  empresaSelecionada,
-  somStatus,
-  onResetEstado,
-  onAtualizarEmpresa,
-  buscarSessaoAtual,
-}) => {
+  // Hooks locais
   const {
     atendentes: atendentesBase,
     carregando: carregandoAtendentes,
@@ -38,8 +34,7 @@ export const CadastroAtendentes: React.FC<CadastroAtendentesProps> = ({
     buscarAtendentes,
   }: any = useAtendentes();
 
-  const { sessaoAtual, abrirSessaoCaixa, fecharSessaoCaixa, buscarSessaoAtual: buscarSessao } =
-    useSessoesCaixa() as any;
+  const { sessaoAtual, abrirSessaoCaixa, fecharSessaoCaixa }: any = useSessoesCaixa();
 
   const { empresa, carregandoEmpresa, cadastrarEmpresa, atualizarEmpresa, deletarEmpresa }: any =
     useEmpresa();
@@ -85,7 +80,7 @@ export const CadastroAtendentes: React.FC<CadastroAtendentesProps> = ({
     const resultado = await deletarAtendente(id);
     if (resultado.sucesso) {
       if (sessaoAtual?.id_atendente === id) {
-        onResetEstado('ATENDENTE');
+        resetarSistemaLocal('ATENDENTE');
       }
       await buscarAtendentes();
     } else {
@@ -104,7 +99,7 @@ export const CadastroAtendentes: React.FC<CadastroAtendentesProps> = ({
     if (resultado.sucesso) {
       setMostrarModalSessao(false);
       setAtendenteSelecionadoParaSessao(null);
-      if (typeof buscarSessao === 'function') await buscarSessao();
+      await buscarSessaoAtual();
       window.location.reload();
     } else {
       alert(resultado.erro || 'Erro ao abrir sessão.');
@@ -119,7 +114,7 @@ export const CadastroAtendentes: React.FC<CadastroAtendentesProps> = ({
     ) {
       const res = await deletarEmpresa(id);
       if (res.sucesso) {
-        onResetEstado('EMPRESA');
+        resetarSistemaLocal('EMPRESA');
       } else {
         alert('Erro ao remover empresa.');
       }
@@ -153,7 +148,7 @@ export const CadastroAtendentes: React.FC<CadastroAtendentesProps> = ({
               empresa={null}
               onCadastrar={async (dados: any) => {
                 const res = await cadastrarEmpresa(dados);
-                if (res.sucesso) onAtualizarEmpresa();
+                if (res.sucesso) carregarDadosEmpresa();
                 return res;
               }}
             />
@@ -205,7 +200,7 @@ export const CadastroAtendentes: React.FC<CadastroAtendentesProps> = ({
           onFecharSessao={async (vFinal: any) => {
             const res = await fecharSessaoCaixa(sessaoAtual.id_sessao, { valor_final: vFinal });
             if (res.sucesso) {
-              onResetEstado('SESSAO');
+              resetarSistemaLocal('SESSAO');
             } else {
               alert(res.erro);
             }

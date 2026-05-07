@@ -1,29 +1,60 @@
-import { memo } from "react";
-import imgFavorito from "/favorito.svg";
-import { formatarParaReal } from "../../pages/pdv/hooks/useVendas";
+// src/components/ui/Button.tsx
+import { memo, type FC } from 'react';
+import imgFavorito from '/favorito.svg';
+import { formatarParaReal } from '../../pages/pdv/hooks/useVendas';
 
-const CATEGORIA_CORES = {
-  "Impressão": "#006064",    
-  "Cópia": "#303F9F",        
-  "Revelação": "#388E3C",    
-  "Scan": "#B71C1C",         
-  "Encadernação": "#512DA8",  
-  "Papelaria": "#F57C00",     
-  "Apostila Color": "#7CB342",
-  "Documento": "#5D4037",    
-  "Serviço": "#0097A7",       
-  "Foto Produto": "#0D47A1",  
-  "Plástico": "#455A64",      
-  "Material": "#C2185B",      
+// ---------------------------------------------------------
+// Tipos locais
+// ---------------------------------------------------------
+interface ProdutoSelecionado {
+  id_produto: number;
+  quantidade: number;
+  [key: string]: unknown; // permite outras propriedades (categoria, descricao, etc.)
+}
+
+export interface ButtonProps {
+  $index: number;
+  $texto: string;
+  $descricao: string;
+  $id: number;
+  $corTexto?: string;
+  $btnClick: () => void;
+  $produtosSelecionados: ProdutoSelecionado[];
+  $preco: number;
+  $totalVendido?: number;
+  $estoqueAtual?: number;
+  $tipoItem?: string;
+  $btnHover?: () => void;
+}
+
+// ---------------------------------------------------------
+// Constantes de cores
+// ---------------------------------------------------------
+const CATEGORIA_CORES: Record<string, string> = {
+  'Impressão': '#006064',
+  'Cópia': '#303F9F',
+  'Revelação': '#388E3C',
+  'Scan': '#B71C1C',
+  'Encadernação': '#512DA8',
+  'Papelaria': '#F57C00',
+  'Apostila Color': '#7CB342',
+  'Documento': '#5D4037',
+  'Serviço': '#0097A7',
+  'Foto Produto': '#0D47A1',
+  'Plástico': '#455A64',
+  'Material': '#C2185B',
 };
 
-const COR_PADRAO_DEFAULT = "#263238"; 
-const COR_SELECIONADO = "#1e1e1e"; 
-const LIMITE_MAIS_VENDIDO = 50; 
+const COR_PADRAO_DEFAULT = '#263238';
+const COR_SELECIONADO = '#1e1e1e';
+const LIMITE_MAIS_VENDIDO = 50;
 
-export const Button = ({
+// ---------------------------------------------------------
+// Componente
+// ---------------------------------------------------------
+const Button: FC<ButtonProps> = ({
   $index,
-  $texto, 
+  $texto,
   $descricao,
   $id,
   $corTexto,
@@ -33,31 +64,31 @@ export const Button = ({
   $totalVendido = 0,
   $estoqueAtual,
   $tipoItem,
-  $btnHover 
+  $btnHover,
 }) => {
-  
-  // Refatoração Sênior: Calculamos a cor diretamente, sem precisar de useState/useEffect
+  // Cor baseada na categoria
   const corCategoria = CATEGORIA_CORES[$texto] || COR_PADRAO_DEFAULT;
 
+  // Verifica se o produto está no carrinho
   const produtoNoCarrinho = $produtosSelecionados.find(
     (p) => p.id_produto === $id
   );
-  
   const estaSelecionado = !!produtoNoCarrinho;
   const quantidadeNoCarrinho = produtoNoCarrinho ? produtoNoCarrinho.quantidade : 0;
 
+  // Condições visuais
   const isMaisVendido = $totalVendido >= LIMITE_MAIS_VENDIDO;
-  const isEstoqueBaixo = $tipoItem === 'Produto' && $estoqueAtual < 5;
-  const isEsgotado = $tipoItem === 'Produto' && $estoqueAtual <= quantidadeNoCarrinho;
+  const isEstoqueBaixo = $tipoItem === 'Produto' && typeof $estoqueAtual === 'number' && $estoqueAtual < 5;
+  const isEsgotado = $tipoItem === 'Produto' && typeof $estoqueAtual === 'number' && $estoqueAtual <= quantidadeNoCarrinho;
 
-  // Lógica das cores dinâmicas inline
+  // Cores dinâmicas
   const bgAtual = estaSelecionado ? COR_SELECIONADO : corCategoria;
   const textoAtual = $corTexto || '#FFFFFF';
 
   return (
     <div
       onClick={() => !isEsgotado && $btnClick()}
-      onMouseEnter={() => $btnHover && $btnHover()}
+      onMouseEnter={() => $btnHover?.()}
       style={{ backgroundColor: bgAtual, color: textoAtual }}
       className={`
         relative flex flex-col justify-center items-center w-full aspect-square p-2.5 rounded-2xl select-none overflow-hidden transition-all duration-200
@@ -96,7 +127,6 @@ export const Button = ({
           {$descricao.toUpperCase()}
         </h4>
         
-        {/* Adicionei um estilo legal para o contador de quantidade que antes não tinha CSS definido */}
         {estaSelecionado && (
           <div className="mt-1 font-bold text-xs bg-black/40 text-success inline-block px-2 py-0.5 rounded-full">
             {quantidadeNoCarrinho}x
@@ -112,7 +142,7 @@ export const Button = ({
       {/* Overlay de Esgotado */}
       {isEsgotado && (
         <div className="absolute inset-0 bg-red-900/80 flex items-center justify-center text-white text-xs font-black tracking-widest -rotate-15 scale-125 z-20">
-          {quantidadeNoCarrinho > 0 ? "LIMITE ESTOQUE" : "ESGOTADO"}
+          {quantidadeNoCarrinho > 0 ? 'LIMITE ESTOQUE' : 'ESGOTADO'}
         </div>
       )}
       
@@ -129,20 +159,28 @@ export const Button = ({
   );
 };
 
-const comparadorDeProps = (prev, next) => {
+// ---------------------------------------------------------
+// Comparador de props para memo
+// ---------------------------------------------------------
+const comparadorDeProps = (
+  prev: Readonly<ButtonProps>,
+  next: Readonly<ButtonProps>
+): boolean => {
+  // Se a quantidade no carrinho mudar, re-renderiza
   const pAnterior = prev.$produtosSelecionados.find(p => p.id_produto === prev.$id);
   const pAtual = next.$produtosSelecionados.find(p => p.id_produto === next.$id);
-
   if (pAnterior?.quantidade !== pAtual?.quantidade) return false;
 
+  // Compara apenas as props usadas no componente (não funções, que são estáveis)
   return (
     prev.$id === next.$id &&
     prev.$index === next.$index &&
     prev.$texto === next.$texto &&
     prev.$descricao === next.$descricao &&
-    prev.$preco === next.$preco && 
-    prev.$totalVendido === next.$totalVendido && 
+    prev.$preco === next.$preco &&
+    prev.$totalVendido === next.$totalVendido &&
     prev.$estoqueAtual === next.$estoqueAtual
+    // $btnClick, $btnHover, $corTexto geralmente são estáveis (useCallback)
   );
 };
 

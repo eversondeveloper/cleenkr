@@ -1,22 +1,16 @@
 // src/pages/gerar_cupom/GerarCupom.tsx
+import { useAppContext } from '@/contexts/AppContext';
 import { useCupom } from './hooks/useCupom';
 import ControlesSelecao from './components/ControlesSelecao';
 import CupomVisualizacao from './components/CupomVisualizacao';
 
-// ---------------------------------------------------------
-// Props que o App.tsx está passando
-// ---------------------------------------------------------
-interface GerarCupomProps {
-  empresaSelecionada: any; // substitua por Empresa | null quando possível
-  somStatus: boolean;
-}
+export const GerarCupom = () => {
+  const { empresaSelecionada, statusSom } = useAppContext();
 
-export const GerarCupom: React.FC<GerarCupomProps> = ({ empresaSelecionada, somStatus }) => {
   const {
     empresas,
     vendas,
     vendaSelecionada,
-    empresaSelecionada: empresaDoHook, // renomeia para não conflitar com a prop
     detalhesVenda,
     carregando,
     erro,

@@ -1,5 +1,6 @@
 // src/pages/relatorio_vendas/Relatorios.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useAppContext } from '@/contexts/AppContext';
 import { ModalRetirada } from './components/ModalRetirada';
 import { ModalEdicaoRetirada } from './components/ModalEdicaoRetirada';
 import { ModalEdicaoVenda } from './components/ModalEdicaoVenda';
@@ -15,21 +16,11 @@ import { SecaoResumo } from './components/SecaoResumo';
 import { SecaoDelecao } from './components/SecaoDelecao';
 import { TabelaVendasComponent } from './components/TabelaVendasComponent';
 import { TabelaRetiradasComponent } from './components/TabelaRetiradasComponent';
-import { useEmpresa } from '../pdv/hooks/useEmpresa';
 
-// ---------------------------------------------------------
-// Props (o que App.tsx está passando)
-// ---------------------------------------------------------
-interface RelatoriosProps {
-  empresaSelecionada: any;   // substitua por Empresa | null quando possível
-  somStatus: boolean;
-}
+export const Relatorios = () => {
+  const { empresaSelecionada, statusSom } = useAppContext();
 
-// ---------------------------------------------------------
-// Componente
-// ---------------------------------------------------------
-export const Relatorios: React.FC<RelatoriosProps> = ({ empresaSelecionada, somStatus }) => {
-  // --- HOOKS DE DADOS (TODO: tipar os hooks quando forem convertidos) ---
+  // --- HOOKS DE DADOS ---
   const {
     vendas,
     carregando,
@@ -58,7 +49,9 @@ export const Relatorios: React.FC<RelatoriosProps> = ({ empresaSelecionada, somS
     resetarFormulario,
   }: any = useRetiradas();
 
-  const { dadosEmpresa, carregandoEmpresa }: any = useEmpresa();
+  // Dados da empresa agora vêm do contexto, não mais de useEmpresa
+  const dadosEmpresa = empresaSelecionada;
+  const carregandoEmpresa = false; // Já foi carregado pelo AppLayout
 
   const {
     filtroDataInicio,
