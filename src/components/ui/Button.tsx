@@ -1,187 +1,67 @@
-// src/components/ui/Button.tsx
-import { memo, type FC } from 'react';
-import imgFavorito from '/favorito.svg';
-import { formatarParaReal } from '../../pages/pdv/hooks/useVendas';
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { Slot } from "radix-ui"
 
-// ---------------------------------------------------------
-// Tipos locais
-// ---------------------------------------------------------
-interface ProdutoSelecionado {
-  id_produto: number;
-  quantidade: number;
-  [key: string]: unknown; // permite outras propriedades (categoria, descricao, etc.)
-}
+import { cn } from "@/lib/utils/utils"
 
-export interface ButtonProps {
-  $index: number;
-  $texto: string;
-  $descricao: string;
-  $id: number;
-  $corTexto?: string;
-  $btnClick: () => void;
-  $produtosSelecionados: ProdutoSelecionado[];
-  $preco: number;
-  $totalVendido?: number;
-  $estoqueAtual?: number;
-  $tipoItem?: string;
-  $btnHover?: () => void;
-}
+const buttonVariants = cva(
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        outline:
+          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+        ghost:
+          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        destructive:
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default:
+          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        icon: "size-8",
+        "icon-xs":
+          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm":
+          "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
+        "icon-lg": "size-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
 
-// ---------------------------------------------------------
-// Constantes de cores
-// ---------------------------------------------------------
-const CATEGORIA_CORES: Record<string, string> = {
-  'Impressão': '#006064',
-  'Cópia': '#303F9F',
-  'Revelação': '#388E3C',
-  'Scan': '#B71C1C',
-  'Encadernação': '#512DA8',
-  'Papelaria': '#F57C00',
-  'Apostila Color': '#7CB342',
-  'Documento': '#5D4037',
-  'Serviço': '#0097A7',
-  'Foto Produto': '#0D47A1',
-  'Plástico': '#455A64',
-  'Material': '#C2185B',
-};
-
-const COR_PADRAO_DEFAULT = '#263238';
-const COR_SELECIONADO = '#1e1e1e';
-const LIMITE_MAIS_VENDIDO = 50;
-
-// ---------------------------------------------------------
-// Componente
-// ---------------------------------------------------------
-const Button: FC<ButtonProps> = ({
-  $index,
-  $texto,
-  $descricao,
-  $id,
-  $corTexto,
-  $btnClick,
-  $produtosSelecionados,
-  $preco,
-  $totalVendido = 0,
-  $estoqueAtual,
-  $tipoItem,
-  $btnHover,
-}) => {
-  // Cor baseada na categoria
-  const corCategoria = CATEGORIA_CORES[$texto] || COR_PADRAO_DEFAULT;
-
-  // Verifica se o produto está no carrinho
-  const produtoNoCarrinho = $produtosSelecionados.find(
-    (p) => p.id_produto === $id
-  );
-  const estaSelecionado = !!produtoNoCarrinho;
-  const quantidadeNoCarrinho = produtoNoCarrinho ? produtoNoCarrinho.quantidade : 0;
-
-  // Condições visuais
-  const isMaisVendido = $totalVendido >= LIMITE_MAIS_VENDIDO;
-  const isEstoqueBaixo = $tipoItem === 'Produto' && typeof $estoqueAtual === 'number' && $estoqueAtual < 5;
-  const isEsgotado = $tipoItem === 'Produto' && typeof $estoqueAtual === 'number' && $estoqueAtual <= quantidadeNoCarrinho;
-
-  // Cores dinâmicas
-  const bgAtual = estaSelecionado ? COR_SELECIONADO : corCategoria;
-  const textoAtual = $corTexto || '#FFFFFF';
+function Button({
+  className,
+  variant = "default",
+  size = "default",
+  asChild = false,
+  ...props
+}: React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }) {
+  const Comp = asChild ? Slot.Root : "button"
 
   return (
-    <div
-      onClick={() => !isEsgotado && $btnClick()}
-      onMouseEnter={() => $btnHover?.()}
-      style={{ backgroundColor: bgAtual, color: textoAtual }}
-      className={`
-        relative flex flex-col justify-center items-center w-full aspect-square p-2.5 rounded-2xl select-none overflow-hidden transition-all duration-200
-        bg-linear-to-br from-white/5 to-black/10 border border-white/10
-        ${isEsgotado 
-          ? 'border-red-500 grayscale-[0.8] opacity-50 cursor-not-allowed pointer-events-none' 
-          : 'cursor-pointer hover:-translate-y-1 hover:from-white/10 hover:to-black/20 hover:shadow-[0_8px_20px_rgba(0,0,0,0.4)] hover:z-10 active:scale-95 active:duration-100'
-        }
-        ${isEstoqueBaixo && !isEsgotado ? 'border-orange-500 shadow-[0_0_10px_rgba(255,152,0,0.2)]' : ''}
-        ${estaSelecionado ? 'border-2! border-success! shadow-[0_0_15px_rgba(100,255,138,0.3)]' : ''}
-      `}
-    >
-      {/* Badge Superior (Índice e Ícone de Fogo) */}
-      <div className="absolute top-2.5 left-2.5 right-2.5 flex justify-between items-center pointer-events-none">
-        <span className="text-[11px] font-extrabold bg-black/30 px-1.5 py-0.5 rounded-md opacity-60">
-          {$index}
-        </span>
-        {isMaisVendido && (
-          <span title={`Top Vendas: ${$totalVendido} vendidos`}>
-            <img 
-              src={imgFavorito} 
-              alt="Favorito" 
-              className="w-4 h-4 drop-shadow-[0_0_5px_rgba(255,215,0,0.5)] animate-pulse" 
-            />
-          </span>
-        )}
-      </div>
-      
-      {/* Conteúdo Principal (Textos e Preço) */}
-      <div className="text-center w-full mt-2.5">
-        <label className="block text-[10px] font-extrabold uppercase tracking-widest opacity-70 mb-1">
-          {$texto}
-        </label>
-        
-        <h4 className="text-[13px] font-semibold m-0 leading-tight text-white line-clamp-2 min-h-7.75">
-          {$descricao.toUpperCase()}
-        </h4>
-        
-        {estaSelecionado && (
-          <div className="mt-1 font-bold text-xs bg-black/40 text-success inline-block px-2 py-0.5 rounded-full">
-            {quantidadeNoCarrinho}x
-          </div>
-        )}
+    <Comp
+      data-slot="button"
+      data-variant={variant}
+      data-size={size}
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+}
 
-        <div className="mt-2 text-success">
-          <small className="text-[10px] font-semibold mr-0.5">R$</small>
-          <strong className="text-lg font-black">{formatarParaReal($preco)}</strong>
-        </div>
-      </div>
-
-      {/* Overlay de Esgotado */}
-      {isEsgotado && (
-        <div className="absolute inset-0 bg-red-900/80 flex items-center justify-center text-white text-xs font-black tracking-widest -rotate-15 scale-125 z-20">
-          {quantidadeNoCarrinho > 0 ? 'LIMITE ESTOQUE' : 'ESGOTADO'}
-        </div>
-      )}
-      
-      {/* Alerta Rodapé de Baixo Estoque */}
-      {isEstoqueBaixo && !isEsgotado && (
-        <div 
-          className="absolute bottom-0 left-0 right-0 bg-orange-500 text-black text-[9px] font-extrabold p-0.5 text-center shadow-[0_-2px_10px_rgba(0,0,0,0.2)]" 
-          title={`Estoque Baixo: ${$estoqueAtual} restantes`}
-        >
-          ⚠️ BAIXO ESTOQUE
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ---------------------------------------------------------
-// Comparador de props para memo
-// ---------------------------------------------------------
-const comparadorDeProps = (
-  prev: Readonly<ButtonProps>,
-  next: Readonly<ButtonProps>
-): boolean => {
-  // Se a quantidade no carrinho mudar, re-renderiza
-  const pAnterior = prev.$produtosSelecionados.find(p => p.id_produto === prev.$id);
-  const pAtual = next.$produtosSelecionados.find(p => p.id_produto === next.$id);
-  if (pAnterior?.quantidade !== pAtual?.quantidade) return false;
-
-  // Compara apenas as props usadas no componente (não funções, que são estáveis)
-  return (
-    prev.$id === next.$id &&
-    prev.$index === next.$index &&
-    prev.$texto === next.$texto &&
-    prev.$descricao === next.$descricao &&
-    prev.$preco === next.$preco &&
-    prev.$totalVendido === next.$totalVendido &&
-    prev.$estoqueAtual === next.$estoqueAtual
-    // $btnClick, $btnHover, $corTexto geralmente são estáveis (useCallback)
-  );
-};
-
-export default memo(Button, comparadorDeProps);
+export { Button, buttonVariants }
