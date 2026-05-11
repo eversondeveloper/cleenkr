@@ -11,8 +11,8 @@ import { SecaoEmpresa } from './components/SecaoEmpresa';
 import { SecaoFiltrosAtendentes } from './components/SecaoFiltrosAtendentes';
 import { SecaoAcoesAtendentes } from './components/SecaoAcoesAtendentes';
 import { TabelaAtendentes } from './components/TabelaAtendentes';
-import { ModalAtendente } from './components/ModalAtendente';
-import { ModalSessaoCaixa } from './components/ModalSessaoCaixa';
+import { DialogAtendente } from './components/DialogAtendente';
+import { ModalSessaoCaixa } from './components/DialogSessaoCaixa';
 
 export const CadastroAtendentes = () => {
   // Contexto global
@@ -242,7 +242,7 @@ export const CadastroAtendentes = () => {
         )}
       </div>
 
-      <ModalAtendente
+      <DialogAtendente
         mostrar={mostrarModalAtendente}
         onClose={() => setMostrarModalAtendente(false)}
         atendenteEditando={atendenteEditando}

@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "./Dialog"; // Ajuste o caminho conforme sua pasta
+} from "./internal/Dialog";
 
 interface DialogBaseProps {
   aberto: boolean;
@@ -32,10 +32,7 @@ export function DialogBase({
           <DialogTitle className="text-xl text-primary">{titulo}</DialogTitle>
           {descricao && <DialogDescription>{descricao}</DialogDescription>}
         </DialogHeader>
-        
-        {/* Aqui entra qualquer formulário, texto ou botão que você passar! */}
         {children}
-
       </DialogContent>
     </Dialog>
   );

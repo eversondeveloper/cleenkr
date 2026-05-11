@@ -1,9 +1,7 @@
 // src/pages/pdv/components/ListaProdutos.tsx
-import Button from '@/components/ui/Button.jsx';
+import CardProduto from '@/components/ui/CardProduto';
 
-// ---------------------------------------------------------
 // Tipos locais (futuramente podem migrar para models/produto.ts)
-// ---------------------------------------------------------
 export interface ProdutoCatalogo {
   id_produto: number;
   descricao: string;
@@ -123,7 +121,7 @@ const ListaProdutos: React.FC<ListaProdutosProps> = ({
       <div className="flex-1 overflow-y-auto p-2.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#333] [&::-webkit-scrollbar-thumb]:rounded-full">
         <div className="grid grid-cols-3 gap-2 w-full justify-items-stretch items-start">
           {produtosOrdenados.map((item, i) => (
-            <Button
+            <CardProduto
               key={item.id_produto}
               $index={i + 1}
               $texto={item.categoria}
